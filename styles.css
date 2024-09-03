@@ -1,0 +1,118 @@
+:root {
+  --size: 300px;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: monospace, monospace;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+  position: relative;
+
+  font-size: 10px;
+  perspective: calc(var(--size) * 2);
+}
+
+* {
+  box-sizing: border-box;
+  transform-style: preserve-3d;
+}
+
+#scene {
+  transform-style: preserve-3d;
+
+  width: 900px;
+  height: 900px;
+
+  > * {
+    position: absolute;
+    top:0;
+    left: 0;
+  }
+}
+
+.cube {
+  /* position: absolute; */
+  width: var(--size);
+  height: var(--size);
+
+  transform: translateZ(calc(var(--size) / 2));
+
+
+  .side {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    > div {
+      width: calc(var(--size) / 3);
+      height: calc(var(--size) / 3);
+      border: 1px solid #000;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    &:nth-child(1) {
+      transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
+      background-color: #FF573344;
+    }
+
+    &:nth-child(2) {
+      transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
+      background-color: #33FF4444;
+    }
+
+    &:nth-child(3) {
+      transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
+      background-color: #3355FF44;
+    }
+
+    &:nth-child(4) {
+      transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
+      background-color: #FF33CC44;
+    }
+
+    &:nth-child(5) {
+      transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
+      background-color: #FFAA3344;
+    }
+
+    &:nth-child(6) {
+      transform: translateZ(calc(var(--size) / 2));
+      background-color: #33FFF344;
+    }
+  }
+}
+
+.plane {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  > div {
+    width: calc(var(--size) / 3);
+    height: calc(var(--size) / 3);
+    border: 1px solid #000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+}
