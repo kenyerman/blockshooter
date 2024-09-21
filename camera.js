@@ -65,10 +65,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const checkKeys = () => {
-    // FACES[faceKey(pos.x, pos.y, pos.z, "z")] = "transparent";
-    // drawFace(faceKey(pos.x, pos.y, pos.z, "z"));
-
     const angle = (look.y * Math.PI) / 180;
+    const world = {
+      x: Math.round(pos.x / FACE_SIZE),
+      y: Math.round(pos.y / FACE_SIZE),
+      z: Math.round(pos.z / FACE_SIZE),
+    };
 
     const v = {
       x: (keys["a"] ?? false) - (keys["d"] ?? false),
@@ -94,11 +96,10 @@ document.addEventListener("DOMContentLoaded", () => {
       velocity.z += v.z;
     }
 
-    const world = {
-      x: Math.round(pos.x / FACE_SIZE),
-      y: Math.round(pos.y / FACE_SIZE),
-      z: Math.round(pos.z / FACE_SIZE),
-    };
+    // has ceiling
+    if (0 < velocity.z && FACES[faceKey(world.x, world.y, world.z + 1, "z")]) {
+      velocity.z = 0;
+    }
 
     pos.x += velocity.x;
     pos.y += velocity.y;
@@ -120,12 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
     pos.y = Math.max(0, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.y));
     pos.z = Math.max(-5, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.z));
 
-    // FACES[faceKey(world.x, world.y, world.z, "z")] = "red";
-    // drawFace(faceKey(world.x, world.y, world.z, "z"));
-
-    // pos.z += v.z;
-    // FACES[faceKey(pos.x, pos.y, pos.z, "z")] = "red";
-    // drawFace(faceKey(pos.x, pos.y, pos.z, "z"));
     refresh();
   };
 
