@@ -2,9 +2,13 @@
 
 let pos = { x: 100, y: 100, z: 0 };
 let look = { p: 0, y: 0, r: 0 };
+let velocity = { x: 0, y: 0, z: 0 };
 
 const PERSPECTIVE = 1000;
-const SPEED = 10;
+const SPEED = 5;
+
+let ducking = false;
+let jumping = false;
 
 document.addEventListener("DOMContentLoaded", () => {
   document
@@ -21,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     scene.style.transform = `translate3d(${-pos.x - 0.5 * FACE_SIZE}px, ${
       -pos.y - 0.5 * FACE_SIZE
-    }px, ${-pos.z - 0.5 * FACE_SIZE}px)`;
+    }px, ${-pos.z - (ducking ? 0 : 0.5 * FACE_SIZE)}px)`;
   };
 
   document.addEventListener("click", () => {
@@ -69,8 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const v = {
       x: (keys["a"] ?? false) - (keys["d"] ?? false),
       y: (keys["s"] ?? false) - (keys["w"] ?? false),
-      z: (keys[" "] ?? false) - (keys["Backspace"] ?? false),
+      z: keys[" "] ?? false,
     };
+
+    ducking = keys["c"];
 
     if (v.x && v.y) {
       v.x *= 0.7071067811865475;
@@ -79,12 +85,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     v.x *= SPEED;
     v.y *= SPEED;
-    v.z *= SPEED;
+    v.z *= SPEED * 2;
 
-    pos.x += v.x * Math.cos(angle) + v.y * Math.sin(angle);
-    pos.y += v.x * Math.sin(angle) - v.y * Math.cos(angle);
-    pos.z += v.z;
+    velocity.x += v.x * Math.cos(angle) + v.y * Math.sin(angle);
+    velocity.y += v.x * Math.sin(angle) - v.y * Math.cos(angle);
+    if (v.z && !jumping) {
+      jumping = true;
+      velocity.z += v.z;
+    }
 
+    const world = {
+      x: Math.round(pos.x / FACE_SIZE),
+      y: Math.round(pos.y / FACE_SIZE),
+      z: Math.round(pos.z / FACE_SIZE),
+    };
+
+    pos.x += velocity.x;
+    pos.y += velocity.y;
+    pos.z += velocity.z;
+
+    velocity.x *= 0.7;
+    velocity.y *= 0.7;
+
+    // falling
+    if (!FACES[faceKey(world.x, world.y, world.z, "z")]) {
+      velocity.z -= 1;
+    } else {
+      // hit the ground
+      velocity.z = 0;
+      jumping = false;
+    }
+
+    pos.x = Math.max(0, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.x));
+    pos.y = Math.max(0, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.y));
+    pos.z = Math.max(-5, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.z));
+
+    // FACES[faceKey(world.x, world.y, world.z, "z")] = "red";
+    // drawFace(faceKey(world.x, world.y, world.z, "z"));
+
+    // pos.z += v.z;
     // FACES[faceKey(pos.x, pos.y, pos.z, "z")] = "red";
     // drawFace(faceKey(pos.x, pos.y, pos.z, "z"));
     refresh();
