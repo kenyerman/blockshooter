@@ -85,8 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
       v.y *= 0.7071067811865475;
     }
 
-    v.x *= SPEED;
-    v.y *= SPEED;
+    v.x *= SPEED * (ducking ? 0.5 : 1);
+    v.y *= SPEED * (ducking ? 0.5 : 1);
     v.z *= SPEED * 2;
 
     velocity.x += v.x * Math.cos(angle) + v.y * Math.sin(angle);
@@ -99,6 +99,23 @@ document.addEventListener("DOMContentLoaded", () => {
     // has ceiling
     if (0 < velocity.z && FACES[faceKey(world.x, world.y, world.z + 1, "z")]) {
       velocity.z = 0;
+    }
+
+    // hit side
+    if (0 < velocity.x && FACES[faceKey(world.x + 1, world.y, world.z, "x")]) {
+      velocity.x = 0;
+    }
+
+    if (velocity.x < 0 && FACES[faceKey(world.x, world.y, world.z, "x")]) {
+      velocity.x = 0;
+    }
+
+    if (0 < velocity.y && FACES[faceKey(world.x, world.y + 1, world.z, "y")]) {
+      velocity.y = 0;
+    }
+
+    if (velocity.y < 0 && FACES[faceKey(world.x, world.y, world.z, "y")]) {
+      velocity.y = 0;
     }
 
     pos.x += velocity.x;
