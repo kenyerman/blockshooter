@@ -1,152 +1,95 @@
 "use strict";
 
-const addCube = () => {
-  const scene = document.querySelector("#scene");
-
-  const cube = document.createElement("div");
-  cube.classList.add("cube");
-
-  for (let i = 0; i < 6; i++) {
-    const side = document.createElement("div");
-    side.classList.add("side");
-
-    for (let j = 0; j < 9; j++) {
-      const square = document.createElement("div");
-      square.classList.add("square");
-      side.appendChild(square);
-    }
-
-    cube.appendChild(side);
-  }
-
-  scene.appendChild(cube);
-};
-
-const addPlane = () => {
-  const scene = document.querySelector("#scene");
-
-  const plane = document.createElement("div");
-  plane.classList.add("plane");
-
-  for (let i = 0; i < 9 * 18; i++) {
-    const rect = document.createElement("div");
-    rect.classList.add("rect");
-
-    rect.textContent = i;
-
-    plane.appendChild(rect);
-  }
-
-  scene.appendChild(plane);
-};
-
-// rot handler
+const FACE_SIZE = 100;
+const MAP_SIZE = 25;
 document.addEventListener("DOMContentLoaded", () => {
-  const scene = document.querySelector("#scene");
+  const root = document.querySelector(":root");
 
-  let isKeyDown = false;
-  let isMouseDown = false;
-  let startX = 0;
-  let startY = 0;
-  let clientX = 0;
-  let clientY = 0;
-
-  const style = window.getComputedStyle(scene);
-  let matrix = new DOMMatrixReadOnly(style.transform);
-
-  document.body.addEventListener("mousedown", (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-
-    clientX = event.clientX;
-    clientY = event.clientY;
-
-    isMouseDown = true;
-    startX = clientX;
-    startY = clientY;
-  });
-
-  document.body.addEventListener("mouseup", (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-
-    isMouseDown = false;
-
-    const style = window.getComputedStyle(scene);
-    matrix = new DOMMatrixReadOnly(style.transform);
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if ((!isKeyDown && event.key === "Meta") || event.key === "Shift") {
-      if (event.key === "Meta") {
-        isKeyDown = true;
-      }
-
-      startX = clientX;
-      startY = clientY;
-      const style = window.getComputedStyle(scene);
-      matrix = new DOMMatrixReadOnly(style.transform);
-    }
-  });
-
-  document.addEventListener("keyup", (event) => {
-    if ((isKeyDown && event.key === "Meta") || event.key === "Shift") {
-      if (event.key === "Meta") {
-        isKeyDown = false;
-      }
-
-      startX = clientX;
-      startY = clientY;
-      const style = window.getComputedStyle(scene);
-      matrix = new DOMMatrixReadOnly(style.transform);
-    }
-  });
-
-  document.body.addEventListener("mousemove", (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-
-    clientX = event.clientX;
-    clientY = event.clientY;
-
-    if (!isMouseDown) {
-      return;
-    }
-
-    const dx = clientX - startX;
-    const dy = clientY - startY;
-
-    if (isKeyDown) {
-      scene.style.transform = matrix
-        .rotate(-dy, event.shiftKey ? dx : 0, event.shiftKey ? -0 : dx)
-        .toString();
-    } else {
-      scene.style.transform = matrix
-        .translate(dx, event.shiftKey ? 0 : dy, event.shiftKey ? dy : 0)
-        .toString();
-    }
-  });
-
-  document.body.addEventListener(
-    "wheel",
-    (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-
-      const style = window.getComputedStyle(scene);
-      matrix = new DOMMatrixReadOnly(style.transform).translate(
-        event.deltaX,
-        0,
-        event.deltaY
-      );
-
-      scene.style.transform = matrix.toString();
-    },
-    { passive: false }
-  );
+  root.style.setProperty("--face-size", `${FACE_SIZE}px`);
+  root.style.setProperty("--map-size", `${MAP_SIZE}`);
 });
 
+let FACES = {};
+const faceKey = (x, y, z, face) => `${x}_${y}_${z}_${face}`;
+const faceKeyFrom = (key) => {
+  const [x, y, z, face] = key.split("_");
+  return { x, y, z, face };
+};
+
+const setFace = (x, y, z, face, color) => {
+  FACES[faceKey(x, y, z, face)] = color;
+};
+
+const drawFace = (key) => {
+  const { x, y, z, face } = faceKeyFrom(key);
+  const color = FACES[key];
+
+  const element = document.querySelector(`#k${key}`);
+  if (element) {
+    element.style.backgroundColor = color;
+    return;
+  }
+
+  const scene = document.querySelector("#scene");
+
+  const faceElement = document.createElement("div");
+  faceElement.id = key;
+  faceElement.classList.add("face");
+  faceElement.classList.add(face);
+  faceElement.style.backgroundColor = color;
+  faceElement.id = `k${key}`;
+
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("face-wrapper");
+  wrapper.appendChild(faceElement);
+  wrapper.style.transform = `translate3d(${x * FACE_SIZE}px, ${
+    y * FACE_SIZE
+  }px, ${z * FACE_SIZE}px)`;
+
+  scene.appendChild(wrapper);
+};
+
+const addCube = (x, y, z, color) => {
+  setFace(x, y, z, "x", color);
+  setFace(x, y, z, "y", color);
+  setFace(x, y, z, "z", color);
+
+  setFace(x + 1, y, z, "x", color);
+  setFace(x, y + 1, z, "y", color);
+  setFace(x, y, z + 1, "z", color);
+};
+
+const addPlane = (z) => {
+  for (let x = 0; x < MAP_SIZE; x++) {
+    for (let y = 0; y < MAP_SIZE; y++) {
+      setFace(x, y, z, "z", "transparent");
+    }
+  }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-  addPlane();
-  addCube();
+  addPlane(0);
+
+  addCube(0, 0, 0, "orange");
+  addCube(MAP_SIZE - 1, 0, 0, "lightblue");
+  addCube(0, MAP_SIZE - 1, 0, "lightgreen");
+  addCube(MAP_SIZE - 1, MAP_SIZE - 1, 0, "lightcoral");
+
+  // for (let x = 0; x < MAP_SIZE; x++) {
+  //   for (let z = 0; z < 5; z++) {
+  //     addCube(x, 0, z, "deepskyblue");
+  //     addCube(x, MAP_SIZE - 1, z, "deepskyblue");
+  //   }
+  // }
+
+  // for (let y = 1; y < MAP_SIZE - 1; y++) {
+  //   for (let z = 0; z < 5; z++) {
+  //     addCube(0, y, z, "deepskyblue");
+  //     addCube(MAP_SIZE - 1, y, z, "deepskyblue");
+  //   }
+  // }
+
+  Object.keys(FACES).forEach((key) => {
+    drawFace(key);
+  });
 });

@@ -1,7 +1,3 @@
-:root {
-  --size: 300px;
-}
-
 html,
 body {
   margin: 0;
@@ -11,15 +7,12 @@ body {
 }
 
 body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100vw;
   height: 100vh;
 
-  position: relative;
-
   font-size: 10px;
-  perspective: calc(var(--size) * 2);
+  perspective: var(--perspective);
+  position: relative;
 }
 
 * {
@@ -27,11 +20,17 @@ body {
   transform-style: preserve-3d;
 }
 
-#scene {
-  transform-style: preserve-3d;
+#viewport {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
 
-  width: 900px;
-  height: 900px;
+#scene {
+  width: 0;
+  height: 0;
+
+  position: relative;
 
   > * {
     position: absolute;
@@ -40,78 +39,22 @@ body {
   }
 }
 
-.cube {
-  /* position: absolute; */
-  width: var(--size);
-  height: var(--size);
+.face {
+  width: var(--face-size);
+  height: var(--face-size);
+  border: 1px solid #000;
 
-  transform: translateZ(calc(var(--size) / 2));
-
-  .side {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-
-    display: flex;
-    flex-wrap: wrap;
-
-    > div {
-      width: calc(var(--size) / 3);
-      height: calc(var(--size) / 3);
-      border: 1px solid #000;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    &:nth-child(1) {
-      transform: rotateX(90deg) translateZ(calc(var(--size) / 2));
-      background-color: #ff573344;
-    }
-
-    &:nth-child(2) {
-      transform: rotateY(90deg) translateZ(calc(var(--size) / 2));
-      background-color: #33ff4444;
-    }
-
-    &:nth-child(3) {
-      transform: rotateY(-90deg) translateZ(calc(var(--size) / 2));
-      background-color: #3355ff44;
-    }
-
-    &:nth-child(4) {
-      transform: rotateX(-90deg) translateZ(calc(var(--size) / 2));
-      background-color: #ff33cc44;
-    }
-
-    &:nth-child(5) {
-      transform: rotateY(180deg) translateZ(calc(var(--size) / 2));
-      background-color: #ffaa3344;
-    }
-
-    &:nth-child(6) {
-      transform: translateZ(calc(var(--size) / 2));
-      background-color: #33fff344;
-    }
+  &.x {
+    transform: rotateY(-90deg)
+      translate3d(calc(var(--face-size) / 2), 0, calc(var(--face-size) / 2));
   }
-}
 
-.plane {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
+  &.y {
+    transform: rotateX(90deg)
+      translate3d(0, calc(var(--face-size) / 2), calc(var(--face-size) / 2));
+  }
 
-  > div {
-    width: calc(var(--size) / 3);
-    height: calc(var(--size) / 3);
-    border: 1px solid #000;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  &.z {
+    transform: translateZ(0);
   }
 }
