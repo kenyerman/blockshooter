@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const viewport = document.querySelector("#viewport");
   const scene = document.querySelector("#scene");
 
-  const refresh = () => {
+  const display = () => {
     viewport.style.transform = `translate3d(0, 0, ${PERSPECTIVE}px) rotateX(${
       90 - look.p
     }deg) rotateY(${look.r}deg) rotateZ(${180 - look.y}deg)`;
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
       look.p = -90;
     }
 
-    refresh();
+    display();
   });
 
   const keys = {};
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     shooting = false;
   });
 
-  const checkKeys = () => {
+  const loop = () => {
     const angle = (look.y * Math.PI) / 180;
     const world = getWorld();
 
@@ -198,14 +198,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    refresh();
-  };
-
-  refresh();
-
-  const loop = () => {
-    checkKeys();
+    display();
     window.requestAnimationFrame(loop);
   };
+
   window.requestAnimationFrame(loop);
 });
