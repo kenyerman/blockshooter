@@ -9,6 +9,13 @@ const SPEED = 5;
 
 let ducking = false;
 let jumping = false;
+let accuracy = 1;
+
+const getWorld = () => ({
+  x: Math.round(pos.x / FACE_SIZE),
+  y: Math.round(pos.y / FACE_SIZE),
+  z: Math.round(pos.z / FACE_SIZE),
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   document
@@ -26,6 +33,28 @@ document.addEventListener("DOMContentLoaded", () => {
     scene.style.transform = `translate3d(${-pos.x - 0.5 * FACE_SIZE}px, ${
       -pos.y - 0.5 * FACE_SIZE
     }px, ${-pos.z - (ducking ? 0 : 0.5 * FACE_SIZE)}px)`;
+
+    document.body.style.background = `linear-gradient(0, lightgreen, lightblue ${
+      (100 * (90 + look.p)) / 180
+    }%)`;
+
+    accuracy =
+      (1 /
+        Math.max(
+          Math.min(
+            Math.sqrt(velocity.x ** 2 + velocity.y ** 2 + velocity.z ** 2),
+            20
+          ),
+          1
+        )) *
+      shooting
+        ? 0.5 + 0.5 * Math.random()
+        : 1;
+
+    document.querySelector(".crosshair").style.transform = `scale(${Math.min(
+      1 / accuracy,
+      2
+    )})`;
   };
 
   document.addEventListener("click", () => {
@@ -57,20 +86,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const keys = {};
   document.addEventListener("keydown", (event) => {
-    keys[event.key] = true;
+    keys[event.key.toLowerCase()] = true;
   });
 
   document.addEventListener("keyup", (event) => {
-    keys[event.key] = false;
+    keys[event.key.toLowerCase()] = false;
+  });
+
+  let shooting = false;
+  document.addEventListener("mousedown", () => {
+    if (!document.pointerLockElement) {
+      return;
+    }
+
+    shooting = true;
+  });
+
+  document.addEventListener("mouseup", () => {
+    shooting = false;
   });
 
   const checkKeys = () => {
     const angle = (look.y * Math.PI) / 180;
-    const world = {
-      x: Math.round(pos.x / FACE_SIZE),
-      y: Math.round(pos.y / FACE_SIZE),
-      z: Math.round(pos.z / FACE_SIZE),
-    };
+    const world = getWorld();
 
     const v = {
       x: (keys["a"] ?? false) - (keys["d"] ?? false),
@@ -137,6 +175,28 @@ document.addEventListener("DOMContentLoaded", () => {
     pos.x = Math.max(0, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.x));
     pos.y = Math.max(0, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.y));
     pos.z = Math.max(-5, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.z));
+
+    if (shooting) {
+      const el = document
+        .elementsFromPoint(window.innerWidth / 2, window.innerHeight / 2)
+        .filter((el) => el.classList.contains("face"))
+        .map((el) => {
+          const face = faceKeyFrom(el.id.slice(1));
+          const dx = world.x - face.x;
+          const dy = world.y - face.y;
+          const dz = world.z - face.z;
+
+          const dist2 = dx * dx + dy * dy + dz * dz;
+
+          return { el, dist2 };
+        })
+        .sort((a, b) => a.dist2 - b.dist2)[0]?.el;
+
+      if (el) {
+        FACES[el.id.slice(1)] = undefined;
+        el.parentElement.remove();
+      }
+    }
 
     refresh();
   };

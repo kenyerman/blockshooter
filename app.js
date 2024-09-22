@@ -26,7 +26,7 @@ const drawFace = (key) => {
 
   const element = document.querySelector(`#k${key}`);
   if (element) {
-    element.style.backgroundColor = color;
+    element.style.background = color;
     return;
   }
 
@@ -36,7 +36,7 @@ const drawFace = (key) => {
   faceElement.id = key;
   faceElement.classList.add("face");
   faceElement.classList.add(face);
-  faceElement.style.backgroundColor = color;
+  faceElement.style.background = color;
   faceElement.id = `k${key}`;
 
   const wrapper = document.createElement("div");
@@ -62,7 +62,7 @@ const addCube = (x, y, z, color) => {
 const addPlane = (z) => {
   for (let x = 0; x < MAP_SIZE; x++) {
     for (let y = 0; y < MAP_SIZE; y++) {
-      setFace(x, y, z, "z", "transparent");
+      setFace(x, y, z, "z", "#fff");
     }
   }
 };
@@ -75,19 +75,18 @@ document.addEventListener("DOMContentLoaded", () => {
   addCube(0, MAP_SIZE - 1, 0, "lightgreen");
   addCube(MAP_SIZE - 1, MAP_SIZE - 1, 0, "lightcoral");
 
-  // for (let x = 0; x < MAP_SIZE; x++) {
-  //   for (let z = 0; z < 5; z++) {
-  //     addCube(x, 0, z, "deepskyblue");
-  //     addCube(x, MAP_SIZE - 1, z, "deepskyblue");
-  //   }
-  // }
+  addCube(12, 12, 0, "lightcoral");
+  addCube(12, 13, 1, "lightcoral");
 
-  // for (let y = 1; y < MAP_SIZE - 1; y++) {
-  //   for (let z = 0; z < 5; z++) {
-  //     addCube(0, y, z, "deepskyblue");
-  //     addCube(MAP_SIZE - 1, y, z, "deepskyblue");
-  //   }
-  // }
+  addCube(12, 14, 2, "lightcoral");
+  setFace(13, 14, 3, "z", "lightcoral");
+  setFace(14, 14, 3, "z", "lightcoral");
+  setFace(12, 15, 3, "z", "lightcoral");
+  setFace(13, 15, 3, "z", "lightcoral");
+  setFace(14, 15, 3, "z", "lightcoral");
+  setFace(12, 16, 3, "z", "lightcoral");
+  setFace(13, 16, 3, "z", "lightcoral");
+  setFace(14, 16, 3, "z", "lightcoral");
 
   Object.keys(FACES).forEach((key) => {
     drawFace(key);
