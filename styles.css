@@ -11,13 +11,36 @@ body {
   height: 100vh;
 
   font-size: 10px;
-  perspective: var(--perspective);
   position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      0deg,
+      transparent,
+      color-mix(in srgb, yellow 90%, transparent)
+    );
+    background-size: 2px 2px;
+    z-index: 1;
+    pointer-events: none;
+  }
 }
 
 * {
   box-sizing: border-box;
   transform-style: preserve-3d;
+}
+
+.viewport-wrapper {
+  perspective: var(--perspective);
+  position: relative;
+  width: 100vw;
+  height: 100vh;
 }
 
 #viewport {
@@ -66,6 +89,7 @@ body {
   width: 30px;
   height: 30px;
   transform: translate(-50%, -50%);
+  mix-blend-mode: difference;
 
   .crosshair {
     width: 30px;
@@ -74,15 +98,15 @@ body {
     background: linear-gradient(
         0,
         transparent 45%,
-        lightgreen 45%,
-        lightgreen 55%,
+        yellow 45%,
+        yellow 55%,
         transparent 55%
       ),
       linear-gradient(
         90deg,
         transparent 45%,
-        lightgreen 45%,
-        lightgreen 55%,
+        yellow 45%,
+        yellow 55%,
         transparent 55%
       );
     clip-path: polygon(
@@ -97,5 +121,52 @@ body {
       100% 100%,
       100% 0%
     );
+  }
+}
+
+.hud {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 120px;
+  padding: 24px 32px;
+
+  display: flex;
+  gap: 32px;
+
+  > .placeholder {
+    flex: 1 1 auto;
+  }
+
+  > div:not(.placeholder) {
+    height: 100%;
+    flex: 0 0 170px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* gap: 16px; */
+
+    border-radius: 24px;
+    background: color-mix(in srgb, orangered 50%, transparent);
+    /* background-size: 100% 2px; */
+    border: 1px solid orangered;
+    box-shadow: 0 0 5px 1px orangered;
+
+    > span,
+    > label {
+      color: orangered;
+    }
+
+    > span {
+      font-size: 32px;
+    }
+
+    > label {
+      font-size: 16px;
+      color: orangered;
+      text-transform: uppercase;
+    }
   }
 }

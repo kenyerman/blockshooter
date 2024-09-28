@@ -6,10 +6,17 @@ let velocity = { x: 0, y: 0, z: 0 };
 
 const PERSPECTIVE = 1000;
 const SPEED = 5;
+const BULLET_RATE = 50;
 
 let ducking = false;
 let jumping = false;
 let accuracy = 1;
+
+let ammo = 100;
+let lastshotSeed = 0;
+
+let health = 100;
+let armor = 100;
 
 const getWorld = () => ({
   x: Math.round(pos.x / FACE_SIZE),
@@ -47,14 +54,16 @@ document.addEventListener("DOMContentLoaded", () => {
           ),
           1
         )) *
-      shooting
-        ? 0.5 + 0.5 * Math.random()
-        : 1;
+      (shooting && ammo ? 0.5 + 0.5 * lastshotSeed : 1);
 
     document.querySelector(".crosshair").style.transform = `scale(${Math.min(
       1 / accuracy,
       2
     )})`;
+
+    document.querySelector("#ammo").textContent = ammo;
+    document.querySelector("#health").textContent = health;
+    document.querySelector("#armor").textContent = armor;
   };
 
   document.addEventListener("click", () => {
@@ -72,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     look.p += event.movementY;
     look.y += event.movementX;
+    look.y %= 360;
 
     if (look.p > 90) {
       look.p = 90;
@@ -82,6 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     display();
+
+    if (event.movementX) {
+      broadcast(serializeState());
+    }
   });
 
   const keys = {};
@@ -106,7 +120,18 @@ document.addEventListener("DOMContentLoaded", () => {
     shooting = false;
   });
 
+  const serializeState = () =>
+    JSON.stringify({
+      x: Math.round(pos.x),
+      y: Math.round(pos.y),
+      z: Math.round(pos.z),
+      yaw: Math.round(look.y),
+    });
+
+  let lastframe = Date.now();
   const loop = () => {
+    const stateBefore = serializeState();
+
     const angle = (look.y * Math.PI) / 180;
     const world = getWorld();
 
@@ -168,6 +193,11 @@ document.addEventListener("DOMContentLoaded", () => {
       velocity.z -= 1;
     } else {
       // hit the ground
+
+      if (velocity.z < 0) {
+        pos.z = world.z * FACE_SIZE;
+      }
+
       velocity.z = 0;
       jumping = false;
     }
@@ -176,29 +206,51 @@ document.addEventListener("DOMContentLoaded", () => {
     pos.y = Math.max(0, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.y));
     pos.z = Math.max(-5, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.z));
 
-    if (shooting) {
-      const el = document
-        .elementsFromPoint(window.innerWidth / 2, window.innerHeight / 2)
-        .filter((el) => el.classList.contains("face"))
-        .map((el) => {
-          const face = faceKeyFrom(el.id.slice(1));
-          const dx = world.x - face.x;
-          const dy = world.y - face.y;
-          const dz = world.z - face.z;
+    if (BULLET_RATE <= Date.now() - lastframe) {
+      lastframe = Date.now();
 
-          const dist2 = dx * dx + dy * dy + dz * dz;
+      if (shooting && ammo) {
+        lastshotSeed = Math.random();
 
-          return { el, dist2 };
-        })
-        .sort((a, b) => a.dist2 - b.dist2)[0]?.el;
+        const el = document
+          .elementsFromPoint(
+            window.innerWidth / 2 + (Math.random() * 10 - 5),
+            window.innerHeight / 2 + (Math.random() * 10 - 5)
+          )
+          .filter((el) => el.classList.contains("face"))
+          .map((el) => {
+            const face = faceKeyFrom(el.id.slice(1));
+            const dx = world.x - face.x;
+            const dy = world.y - face.y;
+            const dz = world.z - face.z;
 
-      if (el) {
-        FACES[el.id.slice(1)] = undefined;
-        el.parentElement.remove();
+            const dist2 = dx * dx + dy * dy + dz * dz;
+
+            return { el, dist2 };
+          })
+          .sort((a, b) => a.dist2 - b.dist2)[0]?.el;
+
+        if (el) {
+          FACES[el.id.slice(1)] = undefined;
+          el.parentElement.remove();
+        }
+
+        ammo--;
+      }
+
+      if (!shooting && ammo < 100 && Math.random() < 0.2) {
+        ammo++;
       }
     }
 
     display();
+
+    const stateNow = serializeState();
+
+    if (stateBefore !== stateNow) {
+      broadcast(stateNow);
+    }
+
     window.requestAnimationFrame(loop);
   };
 

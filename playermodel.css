@@ -1,0 +1,232 @@
+.box > div {
+  position: absolute;
+  border: 1px solid #000;
+  background-color: blueviolet;
+
+  &:nth-child(1) {
+    width: var(--a);
+    height: var(--b);
+
+    transform: rotateY(-90deg)
+      translate3d(calc(var(--a) / 2), 0, calc(var(--a) / 2));
+  }
+
+  &:nth-child(2) {
+    width: var(--c);
+    height: var(--a);
+
+    transform: rotateX(90deg)
+      translate3d(0, calc(var(--a) / 2), calc(var(--a) / 2));
+  }
+
+  &:nth-child(3) {
+    width: var(--c);
+    height: var(--b);
+
+    transform: translateZ(0);
+  }
+
+  &:nth-child(4) {
+    width: var(--a);
+    height: var(--b);
+
+    transform: rotateY(90deg)
+      translate3d(
+        calc(var(--a) / -2),
+        0,
+        calc(var(--c) - var(--a) + var(--a) / 2)
+      );
+  }
+
+  &:nth-child(5) {
+    width: var(--c);
+    height: var(--a);
+
+    transform: rotateX(90deg)
+      translate3d(
+        0,
+        calc(var(--a) / 2),
+        calc(var(--a) - var(--b) + var(--a) / -2)
+      );
+  }
+
+  &:nth-child(6) {
+    width: var(--c);
+    height: var(--b);
+
+    transform: translateZ(var(--a));
+  }
+}
+
+.player {
+  position: relative;
+
+  > .head {
+    position: absolute;
+
+    --size: 15px;
+    --a: var(--size);
+    --b: var(--size);
+    --c: var(--size);
+
+    transform: translate3d(calc(var(--c) / -2), calc(var(--b) / -2), 85px);
+  }
+
+  > .torso {
+    position: absolute;
+
+    --a: 35px;
+    --b: 40px;
+    --c: 20px;
+
+    transform: translate3d(calc(var(--c) / -2), calc(var(--b) / -2), 50px);
+  }
+
+  > .left-arm {
+    transform-origin: 0 0 75px;
+    animation: swing 0.5s ease-in-out infinite alternate;
+
+    > .left-arm-upper {
+      position: absolute;
+
+      --a: 25px;
+      --b: 10px;
+      --c: 10px;
+
+      transform: translate3d(
+        calc(var(--c) / -2),
+        calc(var(--b) / -2 - 25px),
+        55px
+      );
+    }
+
+    > .left-arm-lower {
+      position: absolute;
+
+      --a: 25px;
+      --b: 10px;
+      --c: 10px;
+
+      transform-origin: calc(var(--c) / 2) 0 var(--a);
+      transform: translate3d(
+          calc(var(--c) / -2),
+          calc(var(--b) / -2 - 25px),
+          30px
+        )
+        rotateY(75deg);
+    }
+  }
+
+  > .right-arm {
+    transform-origin: 0 0 75px;
+    animation: swing 0.5s ease-in-out infinite alternate;
+    animation-delay: 0.5s;
+
+    > .right-arm-upper {
+      position: absolute;
+
+      --a: 25px;
+      --b: 10px;
+      --c: 10px;
+
+      transform: translate3d(
+        calc(var(--c) / -2),
+        calc(var(--b) / -2 + 25px),
+        55px
+      );
+    }
+
+    > .right-arm-lower {
+      position: absolute;
+
+      --a: 25px;
+      --b: 10px;
+      --c: 10px;
+
+      transform-origin: calc(var(--c) / 2) 0 var(--a);
+      transform: translate3d(
+          calc(var(--c) / -2),
+          calc(var(--b) / -2 + 25px),
+          30px
+        )
+        rotateY(75deg);
+    }
+  }
+
+  > .left-leg {
+    transform-origin: 0 0 45px;
+
+    > .left-leg-upper {
+      position: absolute;
+
+      --a: 25px;
+      --b: 10px;
+      --c: 10px;
+
+      transform: translate3d(
+        calc(var(--c) / -2),
+        calc(var(--b) / -2 - 10px),
+        25px
+      );
+    }
+
+    > .left-leg-lower {
+      position: absolute;
+
+      --a: 25px;
+      --b: 10px;
+      --c: 10px;
+
+      transform-origin: calc(var(--c) / 2) 0 var(--a);
+      transform: translate3d(
+          calc(var(--c) / -2),
+          calc(var(--b) / -2 - 10px),
+          0px
+        )
+        rotateY(-15deg);
+    }
+  }
+
+  > .right-leg {
+    transform-origin: 0 0 45px;
+
+    > .right-leg-upper {
+      position: absolute;
+
+      --a: 25px;
+      --b: 10px;
+      --c: 10px;
+
+      transform: translate3d(
+        calc(var(--c) / -2),
+        calc(var(--b) / -2 + 10px),
+        25px
+      );
+    }
+
+    > .right-leg-lower {
+      position: absolute;
+
+      --a: 25px;
+      --b: 10px;
+      --c: 10px;
+
+      transform-origin: calc(var(--c) / 2) 0 var(--a);
+      transform: translate3d(
+          calc(var(--c) / -2),
+          calc(var(--b) / -2 + 10px),
+          0px
+        )
+        rotateY(-15deg);
+    }
+  }
+}
+
+@keyframes swing {
+  0% {
+    transform: rotateY(-55deg);
+  }
+  100% {
+    transform: rotateY(55deg);
+  }
+}

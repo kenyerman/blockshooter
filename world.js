@@ -67,10 +67,16 @@ const addPlane = (z) => {
   }
 };
 
+const addPlayer = (x, y, z, yaw) => {
+  setFace(x, y, z, "z", "red");
+  setFace(x, y, z, "x", "red");
+  setFace(x, y, z, "y", "red");
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   addPlane(0);
 
-  addCube(0, 0, 0, "orange");
+  // addCube(0, 0, 0, "orange");
   addCube(MAP_SIZE - 1, 0, 0, "lightblue");
   addCube(0, MAP_SIZE - 1, 0, "lightgreen");
   addCube(MAP_SIZE - 1, MAP_SIZE - 1, 0, "lightcoral");

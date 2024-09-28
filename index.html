@@ -3,21 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <title>css3d</title>
+    <script
+      src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"
+      defer
+    ></script>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="playermodel.css" />
     <script src="world.js" defer></script>
     <script src="player.js" defer></script>
+    <script src="network.js" defer></script>
+    <script src="partner.js" defer></script>
   </head>
   <body>
-    <div id="viewport">
-      <div id="scene"></div>
+    <div class="viewport-wrapper">
+      <div id="viewport">
+        <div id="scene"></div>
+      </div>
     </div>
     <div class="crosshair-wrapper">
       <div class="crosshair"></div>
     </div>
     <div class="hud">
-      <div id="health"></div>
-      <div id="suit"></div>
-      <div id="ammo"></div>
+      <div>
+        <span id="health">100</span>
+        <label>health</label>
+      </div>
+      <div>
+        <span id="armor">100</span>
+        <label>armor</label>
+      </div>
+      <div class="placeholder"></div>
+      <div>
+        <span id="ammo">100</span>
+        <label>ammo</label>
+      </div>
     </div>
   </body>
 </html>
