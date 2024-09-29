@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const viewport = document.querySelector("#viewport");
   const scene = document.querySelector("#scene");
+  const viewmodelPosition = document.querySelector("#viewmodel-position");
 
   const display = () => {
     viewport.style.transform = `translate3d(0, 0, ${PERSPECTIVE}px) rotateX(${
@@ -47,11 +48,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     scene.style.transform = `translate3d(${-pos.x - 0.5 * FACE_SIZE}px, ${
       -pos.y - 0.5 * FACE_SIZE
-    }px, ${-pos.z - (ducking ? 0 : 0.5 * FACE_SIZE)}px)`;
+    }px, ${-pos.z - (ducking ? 0.3 : 0.5) * FACE_SIZE}px)`;
 
     document.body.style.background = `linear-gradient(0, lightgreen, lightblue ${
       (100 * (90 + look.p)) / 180
     }%)`;
+
+    viewmodelPosition.style.transform = `translate3d(${
+      velocity.x + velocity.y + velocity.z
+    }px, ${velocity.x + velocity.y + velocity.z - look.p / 2}px, ${
+      ducking ? 40 : 0
+    }px)`;
 
     accuracy =
       (1 /
@@ -122,10 +129,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     shooting = true;
+    document.querySelector("#viewmodel-animation").classList.add("active");
   });
 
   document.addEventListener("mouseup", () => {
     shooting = false;
+    document.querySelector("#viewmodel-animation").classList.remove("active");
   });
 
   let lastframe = Date.now();

@@ -1,0 +1,72 @@
+.viewmodel {
+  position: absolute;
+  transform: translate3d(60vw, 60vh, 0px) rotateY(15deg) rotateX(-4deg);
+
+  > .box {
+    position: absolute;
+
+    > div {
+      background-color: grey;
+    }
+  }
+
+  > .body {
+    --a: 700px;
+    --b: 100px;
+    --c: 100px;
+    > div {
+      background-color: yellow;
+    }
+  }
+
+  > .aim {
+    --a: 100px;
+    --b: 35px;
+    --c: 40px;
+    transform: translate3d(30px, -35px, 500px);
+    > div {
+      background-color: greenyellow;
+    }
+  }
+
+  > .mag {
+    --a: 75px;
+    --b: 100px;
+    --c: 70px;
+    transform: translate3d(15px, 100px, 300px);
+
+    > div {
+      background-color: greenyellow;
+    }
+  }
+
+  > .aim2 {
+    --a: 20px;
+    --b: 20px;
+    --c: 20px;
+    transform: translate3d(40px, -20px, 50px);
+    > div {
+      background-color: greenyellow;
+    }
+  }
+}
+
+#viewmodel-animation {
+  position: absolute;
+  transform-origin: 0 0 850px;
+  &.active {
+    animation: shoot 120ms ease-out infinite;
+  }
+}
+
+@keyframes shoot {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  10% {
+    transform: translate3d(-15px, 27px, 175px) rotateX(-8deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}

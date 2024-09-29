@@ -38,7 +38,7 @@ body {
 
 .viewport-wrapper {
   perspective: var(--perspective);
-  position: relative;
+  position: absolute;
   width: 100vw;
   height: 100vh;
 }
@@ -150,7 +150,6 @@ body {
 
     border-radius: 24px;
     background: color-mix(in srgb, orangered 50%, transparent);
-    /* background-size: 100% 2px; */
     border: 1px solid orangered;
     box-shadow: 0 0 5px 1px orangered;
 
@@ -168,5 +167,65 @@ body {
       color: orangered;
       text-transform: uppercase;
     }
+  }
+}
+
+.box > div {
+  position: absolute;
+  border: 1px solid #000;
+  background-color: blueviolet;
+
+  &:nth-child(1) {
+    width: var(--a);
+    height: var(--b);
+
+    transform: rotateY(-90deg)
+      translate3d(calc(var(--a) / 2), 0, calc(var(--a) / 2));
+  }
+
+  &:nth-child(2) {
+    width: var(--c);
+    height: var(--a);
+
+    transform: rotateX(90deg)
+      translate3d(0, calc(var(--a) / 2), calc(var(--a) / 2));
+  }
+
+  &:nth-child(3) {
+    width: var(--c);
+    height: var(--b);
+
+    transform: translateZ(0);
+  }
+
+  &:nth-child(4) {
+    width: var(--a);
+    height: var(--b);
+
+    transform: rotateY(90deg)
+      translate3d(
+        calc(var(--a) / -2),
+        0,
+        calc(var(--c) - var(--a) + var(--a) / 2)
+      );
+  }
+
+  &:nth-child(5) {
+    width: var(--c);
+    height: var(--a);
+
+    transform: rotateX(90deg)
+      translate3d(
+        0,
+        calc(var(--a) / 2),
+        calc(var(--a) - var(--b) + var(--a) / -2)
+      );
+  }
+
+  &:nth-child(6) {
+    width: var(--c);
+    height: var(--b);
+
+    transform: translateZ(var(--a));
   }
 }
