@@ -84,7 +84,7 @@
 
   > .left-arm {
     transform-origin: 0 0 40px;
-    animation: swing 0.5s ease-in-out infinite alternate;
+    animation: swing 0.3s ease-in-out infinite alternate;
 
     > .left-arm-upper {
       position: absolute;
@@ -119,8 +119,7 @@
 
   > .right-arm {
     transform-origin: 0 0 40px;
-    animation: swing 0.5s ease-in-out infinite alternate;
-    animation-delay: 0.5s;
+    animation: swing 0.3s ease-in-out infinite alternate-reverse;
 
     > .right-arm-upper {
       position: absolute;
@@ -155,8 +154,7 @@
 
   > .left-leg {
     transform-origin: 0 0 25px;
-    animation: swing 0.5s ease-in-out infinite alternate;
-    animation-delay: 0.5s;
+    animation: swing 0.3s ease-in-out infinite alternate-reverse;
 
     > .left-leg-upper {
       position: absolute;
@@ -191,7 +189,7 @@
 
   > .right-leg {
     transform-origin: 0 0 25px;
-    animation: swing 0.5s ease-in-out infinite alternate;
+    animation: swing 0.3s ease-in-out infinite alternate;
 
     > .right-leg-upper {
       position: absolute;
