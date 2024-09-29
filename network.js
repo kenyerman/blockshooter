@@ -12,6 +12,14 @@ const broadcast = (data) => {
   }
 };
 
+const send = (id, data) => {
+  const conn = connections[id];
+
+  if (conn) {
+    conn.send(data);
+  }
+};
+
 const callbacks = [];
 const registerCallback = (f) => callbacks.push(f);
 
@@ -72,6 +80,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("incoming connection from", conn.peer);
     connections[conn.peer] = conn;
 
+    conn.on("open", () => {
+      console.log("connection open to", conn.peer);
+      conn.send(JSON.stringify({ FACES }));
+      conn.send(serializeState());
+    });
+
     conn.on("data", (data) => {
       callbacks.forEach((f) => f(conn.peer, JSON.parse(data)));
     });
@@ -98,8 +112,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log("closing connection to", conn.peer);
         delete connections[conn.peer];
       });
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
   }
 });

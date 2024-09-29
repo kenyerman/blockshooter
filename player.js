@@ -24,6 +24,14 @@ const getWorld = () => ({
   z: Math.round(pos.z / FACE_SIZE),
 });
 
+const serializeState = () =>
+  JSON.stringify({
+    x: Math.round(pos.x),
+    y: Math.round(pos.y),
+    z: Math.round(pos.z),
+    yaw: Math.round(look.y),
+  });
+
 document.addEventListener("DOMContentLoaded", () => {
   document
     .querySelector(":root")
@@ -120,14 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
     shooting = false;
   });
 
-  const serializeState = () =>
-    JSON.stringify({
-      x: Math.round(pos.x),
-      y: Math.round(pos.y),
-      z: Math.round(pos.z),
-      yaw: Math.round(look.y),
-    });
-
   let lastframe = Date.now();
   const loop = () => {
     const stateBefore = serializeState();
@@ -212,27 +212,108 @@ document.addEventListener("DOMContentLoaded", () => {
       if (shooting && ammo) {
         lastshotSeed = Math.random();
 
-        const el = document
+        const target = document
           .elementsFromPoint(
             window.innerWidth / 2 + (Math.random() * 10 - 5),
             window.innerHeight / 2 + (Math.random() * 10 - 5)
           )
-          .filter((el) => el.classList.contains("face"))
+          .filter(
+            (el) =>
+              el.classList.contains("face") ||
+              el.parentElement?.parentElement?.classList?.contains("player") ||
+              el.parentElement?.parentElement?.parentElement?.classList?.contains(
+                "player"
+              )
+          )
           .map((el) => {
+            const playerId =
+              el.parentElement?.parentElement?.id ||
+              el.parentElement?.parentElement?.parentElement?.id;
+            const ppos = playerPos[playerId];
+
+            if (ppos) {
+              const dx = ppos.x - pos.x;
+              const dy = ppos.y - pos.y;
+              const dz = ppos.z - pos.z;
+
+              const dist2 = dx * dx + dy * dy + dz * dz;
+              const dist = Math.sqrt(dist2);
+              const v = { x: dx / dist, y: dy / dist, z: dz / dist };
+
+              let damage = 10;
+
+              const part = el.parentElement.classList.item(0);
+
+              switch (part) {
+                case "head":
+                  damage = 60;
+                  break;
+                case "torso":
+                  damage = 60;
+                  break;
+                case "right-arm-upper":
+                  damage = 40;
+                  break;
+                case "right-arm-lower":
+                  damage = 20;
+                  break;
+                case "left-arm-upper":
+                  damage = 40;
+                  break;
+                case "left-arm-lower":
+                  damage = 20;
+                  break;
+                case "right-leg-upper":
+                  damage = 30;
+                  break;
+                case "right-leg-lower":
+                  damage = 20;
+                  break;
+                case "left-leg-upper":
+                  damage = 30;
+                  break;
+                case "left-leg-lower":
+                  damage = 20;
+                  break;
+              }
+
+              return { playerId, dist2, damage, v };
+            }
+
             const face = faceKeyFrom(el.id.slice(1));
-            const dx = world.x - face.x;
-            const dy = world.y - face.y;
-            const dz = world.z - face.z;
 
-            const dist2 = dx * dx + dy * dy + dz * dz;
+            if (face) {
+              const dx = world.x - face.x;
+              const dy = world.y - face.y;
+              const dz = world.z - face.z;
 
-            return { el, dist2 };
+              const dist2 = dx * dx + dy * dy + dz * dz;
+
+              return { el, dist2 };
+            }
+
+            return undefined;
           })
-          .sort((a, b) => a.dist2 - b.dist2)[0]?.el;
+          .sort((a, b) => a?.dist2 - b?.dist2)[0];
 
-        if (el) {
-          FACES[el.id.slice(1)] = undefined;
-          el.parentElement.remove();
+        if (target?.el) {
+          FACES[target.el.id.slice(1)] = undefined;
+          target.el.parentElement.remove();
+          broadcast(
+            JSON.stringify({
+              removeFace: target.el.id.slice(1),
+            })
+          );
+        }
+
+        if (target?.playerId) {
+          send(
+            target.playerId,
+            JSON.stringify({
+              damage: target.damage,
+              v: target.v,
+            })
+          );
         }
 
         ammo--;
@@ -255,4 +336,28 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   window.requestAnimationFrame(loop);
+
+  registerCallback((peer, data) => {
+    const { damage, v } = data;
+
+    if (damage) {
+      health -= damage * (armor ? 0.5 : 1);
+      armor -= damage * 0.5;
+
+      if (health <= 0) {
+        health = 100;
+        armor = 100;
+        pos = { x: 100, y: 100, z: 0 };
+      }
+
+      if (armor < 0) {
+        health += armor;
+        armor = 0;
+      }
+
+      velocity.x += v.x * 10;
+      velocity.y += v.y * 10;
+      velocity.z += v.z * 10;
+    }
+  });
 });

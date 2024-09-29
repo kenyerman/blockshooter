@@ -1,9 +1,10 @@
 "use strict";
 
 const players = {};
+const playerPos = {};
 
 document.addEventListener("DOMContentLoaded", () => {
-  const createPeer = (x, y, z, yaw) => {
+  const createPartner = (id, x, y, z, yaw) => {
     const createBox = (className) => {
       const box = document.createElement("div");
       box.classList.add(className);
@@ -20,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const scene = document.querySelector("#scene");
 
     const player = document.createElement("div");
+    player.id = id;
     player.classList.add("player");
     player.appendChild(createBox("head"));
     player.appendChild(createBox("torso"));
@@ -62,13 +64,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const player = players[peer];
 
     if (!player) {
-      players[peer] = createPeer(x, y, z, yaw);
+      players[peer] = createPartner(peer, x, y, z, yaw);
     }
 
     players[peer].style.transform = `translate3d(${x + 50}px, ${
       y + 50
     }px, ${z}px) rotateZ(${yaw - 90}deg)`;
 
-    console.log("Received", peer, data);
+    playerPos[peer] = { x, y, z, yaw };
   });
 });

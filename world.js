@@ -76,7 +76,7 @@ const addPlayer = (x, y, z, yaw) => {
 document.addEventListener("DOMContentLoaded", () => {
   addPlane(0);
 
-  // addCube(0, 0, 0, "orange");
+  addCube(0, 0, 0, "orange");
   addCube(MAP_SIZE - 1, 0, 0, "lightblue");
   addCube(0, MAP_SIZE - 1, 0, "lightgreen");
   addCube(MAP_SIZE - 1, MAP_SIZE - 1, 0, "lightcoral");
@@ -96,5 +96,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   Object.keys(FACES).forEach((key) => {
     drawFace(key);
+  });
+
+  registerCallback((peer, data) => {
+    const { FACES: incomingFaces, removeFace } = data;
+
+    if (incomingFaces) {
+      FACES = incomingFaces;
+    }
+
+    if (removeFace) {
+      FACES[removeFace] = undefined;
+      document.querySelector(`#k${removeFace}`).parentElement.remove();
+    }
   });
 });
