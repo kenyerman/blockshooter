@@ -6,14 +6,17 @@ let velocity = { x: 0, y: 0, z: 0 };
 
 const PERSPECTIVE = 1000;
 const SPEED = 5;
-const BULLET_RATE = 50;
+const BULLET_RATE = 100;
+const STEP_RATE = 400;
+const MAX_AMMO = 40;
 
 let ducking = false;
 let jumping = false;
 let accuracy = 1;
 
-let ammo = 100;
+let ammo = MAX_AMMO;
 let lastshotSeed = 0;
+let stepcount = 0;
 
 let health = 100;
 let armor = 100;
@@ -31,6 +34,37 @@ const serializeState = () =>
     z: Math.round(pos.z),
     yaw: Math.round(look.y),
   });
+
+const degreesToRadians = (deg) => {
+  return deg * (Math.PI / 180);
+};
+
+const getHowlerVectors = () => {
+  // Convert pitch, yaw, and roll from degrees to radians
+  let pitch = degreesToRadians(90 - look.p);
+  let yaw = degreesToRadians(180 - look.y);
+  let roll = degreesToRadians(look.r);
+
+  // Calculate the forward vector
+  let forward = {
+    x: Math.cos(pitch) * Math.sin(yaw),
+    y: Math.sin(pitch),
+    z: Math.cos(pitch) * Math.cos(yaw),
+  };
+
+  // Calculate the up vector
+  let up = {
+    x:
+      -Math.cos(roll) * Math.sin(yaw) -
+      Math.sin(roll) * Math.sin(pitch) * Math.cos(yaw),
+    y: Math.sin(roll) * Math.cos(pitch),
+    z:
+      Math.cos(roll) * Math.cos(yaw) -
+      Math.sin(roll) * Math.sin(pitch) * Math.sin(yaw),
+  };
+
+  return { forward, up };
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   document
@@ -107,6 +141,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     display();
+    const { forward, up } = getHowlerVectors();
+    Howler.pos(pos.x, pos.y, pos.z + FACE_SIZE / 2);
+    Howler.orientation(forward.x, forward.y, forward.z, up.x, up.y, up.z);
 
     if (event.movementX) {
       broadcast(serializeState());
@@ -129,15 +166,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     shooting = true;
-    document.querySelector("#viewmodel-animation").classList.add("active");
+
+    if (ammo) {
+      document.querySelector("#viewmodel-animation").classList.add("active");
+    }
   });
 
   document.addEventListener("mouseup", () => {
     shooting = false;
     document.querySelector("#viewmodel-animation").classList.remove("active");
+
+    if (ammo !== 0) {
+      play("shell");
+    }
   });
 
   let lastframe = Date.now();
+  let lastframeStep = Date.now();
   const loop = () => {
     const stateBefore = serializeState();
 
@@ -205,6 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (velocity.z < 0) {
         pos.z = world.z * FACE_SIZE;
+        play("step", stepcount++ % 2 === 0 ? "a" : "b");
       }
 
       velocity.z = 0;
@@ -214,6 +260,8 @@ document.addEventListener("DOMContentLoaded", () => {
     pos.x = Math.max(0, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.x));
     pos.y = Math.max(0, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.y));
     pos.z = Math.max(-5, Math.min((MAP_SIZE - 1) * FACE_SIZE, pos.z));
+
+    Howler.pos(pos.x, pos.y, pos.z);
 
     if (BULLET_RATE <= Date.now() - lastframe) {
       lastframe = Date.now();
@@ -326,10 +374,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         ammo--;
+
+        play("shot");
+
+        if (ammo === 0) {
+          play("shell");
+          document
+            .querySelector("#viewmodel-animation")
+            .classList.remove("active");
+        }
+      } else if (shooting) {
+        play("empty", "empty");
       }
 
-      if (!shooting && ammo < 100 && Math.random() < 0.2) {
+      if (!shooting && ammo < MAX_AMMO && Math.random() < 0.2) {
         ammo++;
+      }
+    }
+
+    if (STEP_RATE <= Date.now() - lastframeStep) {
+      lastframeStep = Date.now();
+
+      if ((Math.round(velocity.x) || Math.round(velocity.y)) && !velocity.z) {
+        play("step", stepcount++ % 2 === 0 ? "a" : "b");
       }
     }
 
@@ -352,6 +419,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (damage) {
       health -= damage * (armor ? 0.5 : 1);
       armor -= damage * 0.5;
+
+      play("hurt");
 
       if (health <= 0) {
         health = 100;
