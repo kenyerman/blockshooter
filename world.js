@@ -103,6 +103,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (incomingFaces) {
       FACES = incomingFaces;
+
+      document.querySelectorAll("#scene .face-wrapper").forEach((el) => {
+        const key = el.firstChild.id.slice(1);
+
+        if (!FACES[key]) {
+          el.remove();
+          return;
+        }
+
+        el.firstChild.style.background = FACES[key];
+      });
     }
 
     if (removeFace) {

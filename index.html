@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>css3d</title>
+    <title>blockshooter</title>
 
     <script
       src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"
@@ -23,6 +23,7 @@
     <script src="network.js" defer></script>
     <script src="partner.js" defer></script>
     <script src="snd.js" defer></script>
+    <script src="scoreboard.js" defer></script>
   </head>
   <body>
     <div class="viewport-wrapper">
@@ -87,6 +88,41 @@
         <span id="ammo">100</span>
         <label>ammo</label>
       </div>
+    </div>
+    <dialog class="menu">
+      <h1>blockshooter</h1>
+      <h2>controls:</h2>
+      <div class="row">
+        <div class="col">
+          <img src="/assets/wasd.png" alt="WASD" />
+          <label>movement</label>
+        </div>
+        <div class="col">
+          <img src="/assets/mouse.png" alt="mouse" />
+          <label>look & shoot</label>
+        </div>
+      </div>
+      <h2>set name:</h2>
+      <form>
+        <div style="width: 100%">
+          <input placeholder="xXx_Pu$$Y_HUNT3R_xXx" required name="name" />
+        </div>
+        <button type="submit">play</button>
+      </form>
+    </dialog>
+    <div id="scoreboard">
+      <h1>scoreboard</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>name</th>
+            <th>score</th>
+            <th>kills</th>
+            <th>deaths</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
   </body>
 </html>

@@ -1,8 +1,16 @@
 "use strict";
 
+let playerName = "player";
+
 let pos = { x: 100, y: 100, z: 0 };
 let look = { p: 0, y: 0, r: 0 };
 let velocity = { x: 0, y: 0, z: 0 };
+
+const SPAWN_POINTS = [
+  { x: 100, y: 100, z: 0 },
+  { x: 1200, y: 1000, z: 0 },
+  { x: 2300, y: 300, z: 0 },
+];
 
 const PERSPECTIVE = 1000;
 const SPEED = 5;
@@ -67,6 +75,19 @@ const getHowlerVectors = () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  const dialog = document.querySelector("dialog");
+  dialog.showModal();
+
+  document.querySelector("dialog form").addEventListener("submit", () => {
+    playerName = document.querySelector("dialog input").value;
+    setSelfName(playerName);
+    broadcast(JSON.stringify({ name: playerName }));
+
+    dialog.close();
+    dialog.remove();
+    scene.requestPointerLock();
+  });
+
   document
     .querySelector(":root")
     .style.setProperty("--perspective", `${PERSPECTIVE}px`);
@@ -116,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   document.addEventListener("click", () => {
-    if (document.pointerLockElement) {
+    if (dialog.open || document.pointerLockElement) {
       return;
     }
 
@@ -152,10 +173,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const keys = {};
   document.addEventListener("keydown", (event) => {
+    if (!document.pointerLockElement) {
+      return;
+    }
+
     keys[event.key.toLowerCase()] = true;
   });
 
   document.addEventListener("keyup", (event) => {
+    if (!document.pointerLockElement) {
+      return;
+    }
+
     keys[event.key.toLowerCase()] = false;
   });
 
@@ -173,6 +202,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("mouseup", () => {
+    if (!document.pointerLockElement) {
+      return;
+    }
+
     shooting = false;
     document.querySelector("#viewmodel-animation").classList.remove("active");
 
@@ -371,6 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
               v: target.v,
             })
           );
+          gainScore(target.damage);
         }
 
         ammo--;
@@ -425,7 +459,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (health <= 0) {
         health = 100;
         armor = 100;
-        pos = { x: 100, y: 100, z: 0 };
+
+        pos =
+          SPAWN_POINTS[Math.round(Math.random() * (SPAWN_POINTS.length - 1))];
+        broadcast(serializeState());
+
+        getKilledByPeer(peer);
       }
 
       if (armor < 0) {

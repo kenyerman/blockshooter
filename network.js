@@ -22,9 +22,12 @@ const send = (id, data) => {
 
 const callbacks = [];
 const registerCallback = (f) => callbacks.push(f);
+const cleanups = [];
+const registerCleanup = (f) => cleanups.push(f);
 
 document.addEventListener("beforeunload", () => {
   if (peer) {
+    console.log("destroying peer");
     peer.destroy();
   }
 });
@@ -82,16 +85,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     conn.on("open", () => {
       console.log("connection open to", conn.peer);
+
+      // sending the current state to the new connection
       conn.send(JSON.stringify({ FACES }));
       conn.send(serializeState());
+      conn.send(JSON.stringify({ stats }));
     });
 
     conn.on("data", (data) => {
-      callbacks.forEach((f) => f(conn.peer, JSON.parse(data)));
+      try {
+        data = JSON.parse(data);
+        callbacks.forEach((f) => f(conn.peer, data));
+      } catch (e) {
+        console.warn("invalid data", data);
+        return;
+      }
     });
     conn.on("close", () => {
       console.log("closing connection to", conn.peer);
       delete connections[conn.peer];
+      cleanups.forEach((f) => f(conn.peer));
     });
   });
 
@@ -105,12 +118,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       const conn = await createConnection(peer, `${PREFIX}${j}`);
       connections[conn.peer] = conn;
       console.log("connecting to", `${PREFIX}${j}`, "done");
+      conn.send(serializeState());
+      conn.send(JSON.stringify({ name: playerName }));
+
       conn.on("data", (data) => {
         callbacks.forEach((f) => f(conn.peer, JSON.parse(data)));
       });
       conn.on("close", () => {
         console.log("closing connection to", conn.peer);
         delete connections[conn.peer];
+        cleanups.forEach((f) => f(conn.peer));
       });
     } catch (e) {}
   }

@@ -73,4 +73,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     playerPos[peer] = { x, y, z, yaw };
   });
+
+  registerCleanup((peer) => {
+    players[peer]?.remove();
+
+    delete players[peer];
+    delete playerPos[peer];
+  });
 });
