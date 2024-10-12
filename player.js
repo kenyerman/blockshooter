@@ -77,11 +77,14 @@ const getHowlerVectors = () => {
 document.addEventListener("DOMContentLoaded", () => {
   const dialog = document.querySelector("dialog");
   dialog.showModal();
+  document.querySelector("dialog input").value =
+    localStorage.getItem("@css3d/playerName") || "";
 
   document.querySelector("dialog form").addEventListener("submit", () => {
     playerName = document.querySelector("dialog input").value;
     setSelfName(playerName);
     broadcast(JSON.stringify({ name: playerName }));
+    localStorage.setItem("@css3d/playerName", playerName);
 
     dialog.close();
     dialog.remove();
