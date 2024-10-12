@@ -205,6 +205,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (event.button === 0) {
+      const highlight = document.querySelector(".highlight");
+      if (keys["e"] && !shooting && highlight) {
+        const face = highlight.id.slice(1);
+        FACES[face] = "red";
+        highlight.classList.remove("highlight");
+        highlight.style.backgroundColor = "red";
+
+        broadcast(
+          JSON.stringify({
+            addFace: face,
+          })
+        );
+        return;
+      }
+
       shooting = true;
 
       if (ammo) {
@@ -467,6 +482,93 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if ((Math.round(velocity.x) || Math.round(velocity.y)) && !velocity.z) {
         play("step", stepcount++ % 2 === 0 ? "a" : "b");
+      }
+    }
+
+    document.querySelector(".highlight")?.parentElement?.remove();
+    if (keys["e"]) {
+      const target = document
+        .elementsFromPoint(
+          window.innerWidth / 2 + (Math.random() * 6 - 3),
+          window.innerHeight / 2 + (Math.random() * 6 - 3)
+        )
+        .filter((el) => el.classList.contains("face"))
+        .map((el) => {
+          const face = faceKeyFrom(el.id.slice(1));
+
+          if (face) {
+            const dx = world.x - face.x;
+            const dy = world.y - face.y;
+            const dz = world.z - face.z;
+
+            const dist2 = dx * dx + dy * dy + dz * dz;
+
+            if (9 < dist2) {
+              return undefined;
+            }
+
+            return { el, dist2 };
+          }
+
+          return undefined;
+        })
+        .sort((a, b) => a?.dist2 - b?.dist2)[0];
+
+      if (target?.el) {
+        const face = faceKeyFrom(target.el.id.slice(1));
+
+        const axis =
+          face.face !== "z" ? "z" : Math.round(look.y / 30) % 2 ? "x" : "y";
+
+        let face2 = faceKey(face.x, face.y, face.z, axis);
+
+        if (!FACES[face2]) {
+          drawFace(face2);
+          document.querySelector(`#k${face2}`)?.classList?.add("highlight");
+        } else {
+          const possibleFaces = [];
+
+          const axisList = ["x", "y", "z"];
+          axisList.splice(axisList.indexOf(axis), 1);
+          axisList.unshift(axis);
+
+          for (const axis of axisList) {
+            const axisList2 = ["x", "y", "z"];
+            axisList2.splice(axisList2.indexOf(axis), 1);
+            axisList2.unshift(axis);
+
+            for (const a2 of axisList2) {
+              for (let i = -1; i <= 1; i += 2) {
+                const deltaFace = {
+                  ...face,
+                  axis,
+                  [a2]: Number.parseInt(face[a2]) + i,
+                };
+
+                if (deltaFace[a2] < 0 || MAP_SIZE <= deltaFace[a2]) {
+                  continue;
+                }
+
+                face2 = faceKey(
+                  deltaFace.x,
+                  deltaFace.y,
+                  deltaFace.z,
+                  deltaFace.axis
+                );
+
+                possibleFaces.push(face2);
+              }
+            }
+          }
+
+          for (const face2 of possibleFaces) {
+            if (!FACES[face2]) {
+              drawFace(face2);
+              document.querySelector(`#k${face2}`)?.classList?.add("highlight");
+              break;
+            }
+          }
+        }
       }
     }
 

@@ -20,9 +20,9 @@ const setFace = (x, y, z, face, color) => {
   FACES[faceKey(x, y, z, face)] = color;
 };
 
-const drawFace = (key) => {
+const drawFace = (key, fallbackColor) => {
   const { x, y, z, face } = faceKeyFrom(key);
-  const color = FACES[key];
+  const color = FACES[key] || fallbackColor;
 
   const element = document.querySelector(`#k${key}`);
   if (element) {
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   registerCallback((peer, data) => {
-    const { FACES: incomingFaces, removeFace } = data;
+    const { FACES: incomingFaces, removeFace, addFace } = data;
 
     if (incomingFaces) {
       FACES = incomingFaces;
@@ -119,6 +119,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (removeFace) {
       FACES[removeFace] = undefined;
       document.querySelector(`#k${removeFace}`).parentElement.remove();
+    }
+
+    if (addFace) {
+      FACES[addFace] = "red";
+      drawFace(addFace);
     }
   });
 });

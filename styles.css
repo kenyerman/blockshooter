@@ -67,6 +67,10 @@ body {
   height: var(--face-size);
   border: 1px solid #000;
 
+  &.highlight {
+    background-color: rgba(255, 0, 0, 0.5) !important;
+  }
+
   &.x {
     transform: rotateY(-90deg)
       translate3d(calc(var(--face-size) / 2), 0, calc(var(--face-size) / 2));
