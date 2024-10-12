@@ -1,6 +1,16 @@
 .viewmodel {
   position: absolute;
   transform: translate3d(60vw, 60vh, 0px) rotateY(15deg) rotateX(-4deg);
+  transition: transform 120ms ease;
+
+  &.aim-down-sights {
+    transform: translate3d(calc(50vw - 50px), calc(50vh + 10px), 280px)
+      rotateY(0) rotateX(0);
+  }
+
+  .xh {
+    background: color-mix(in srgb, greenyellow, transparent 85%) !important;
+  }
 
   > .box {
     position: absolute;

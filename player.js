@@ -21,6 +21,7 @@ const MAX_AMMO = 40;
 let ducking = false;
 let jumping = false;
 let accuracy = 1;
+let aimDownSights = false;
 
 let ammo = MAX_AMMO;
 let lastshotSeed = 0;
@@ -113,10 +114,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }%)`;
 
     viewmodelPosition.style.transform = `translate3d(${
-      velocity.x + velocity.y + velocity.z
-    }px, ${velocity.x + velocity.y + velocity.z - look.p / 2}px, ${
-      ducking ? 40 : 0
-    }px)`;
+      velocity.x * Math.cos(degreesToRadians(look.y)) +
+      velocity.y * Math.sin(degreesToRadians(look.y))
+    }px, ${Math.max(
+      -10,
+      velocity.x * Math.sin(degreesToRadians(look.y)) +
+        velocity.y * Math.cos(degreesToRadians(look.y)) +
+        velocity.z -
+        look.p / (aimDownSights ? 24 : 2)
+    )}px, ${ducking ? 40 : 0}px)`;
 
     accuracy =
       (1 /
@@ -167,6 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     display();
     const { forward, up } = getHowlerVectors();
     Howler.pos(pos.x, pos.y, pos.z + FACE_SIZE / 2);
+    // FIXME: sound orientation does not work
     Howler.orientation(forward.x, forward.y, forward.z, up.x, up.y, up.z);
 
     if (event.movementX) {
@@ -192,28 +199,48 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   let shooting = false;
-  document.addEventListener("mousedown", () => {
+  document.addEventListener("mousedown", (event) => {
     if (!document.pointerLockElement) {
       return;
     }
 
-    shooting = true;
+    if (event.button === 0) {
+      shooting = true;
 
-    if (ammo) {
-      document.querySelector("#viewmodel-animation").classList.add("active");
+      if (ammo) {
+        document.querySelector("#viewmodel-animation").classList.add("active");
+      }
+
+      return;
+    }
+
+    if (event.button === 2) {
+      document
+        .querySelector("#viewmodel-animation .viewmodel")
+        .classList.add("aim-down-sights");
+      aimDownSights = true;
     }
   });
 
-  document.addEventListener("mouseup", () => {
+  document.addEventListener("mouseup", (event) => {
     if (!document.pointerLockElement) {
       return;
     }
 
-    shooting = false;
-    document.querySelector("#viewmodel-animation").classList.remove("active");
+    if (event.button === 0) {
+      shooting = false;
+      document.querySelector("#viewmodel-animation").classList.remove("active");
 
-    if (ammo !== 0) {
-      play("shell");
+      if (ammo !== 0) {
+        play("shell");
+      }
+    }
+
+    if (event.button === 2) {
+      document
+        .querySelector("#viewmodel-animation .viewmodel")
+        .classList.remove("aim-down-sights");
+      aimDownSights = false;
     }
   });
 
@@ -238,8 +265,8 @@ document.addEventListener("DOMContentLoaded", () => {
       v.y *= 0.7071067811865475;
     }
 
-    v.x *= SPEED * (ducking ? 0.5 : 1);
-    v.y *= SPEED * (ducking ? 0.5 : 1);
+    v.x *= SPEED * (ducking || aimDownSights ? 0.5 : 1);
+    v.y *= SPEED * (ducking || aimDownSights ? 0.5 : 1);
     v.z *= SPEED * 2;
 
     velocity.x += v.x * Math.cos(angle) + v.y * Math.sin(angle);
@@ -299,16 +326,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     Howler.pos(pos.x, pos.y, pos.z);
 
+    look.r *= 0.9;
+
     if (BULLET_RATE <= Date.now() - lastframe) {
       lastframe = Date.now();
 
       if (shooting && ammo) {
         lastshotSeed = Math.random();
 
+        look.y += (Math.random() - 0.5) * (aimDownSights || ducking ? 1 : 3);
+        look.p += (Math.random() - 0.5) * (aimDownSights || ducking ? 1 : 3);
+        look.r += (Math.random() - 0.5) * (aimDownSights || ducking ? 1 : 3);
+
         const target = document
           .elementsFromPoint(
-            window.innerWidth / 2 + (Math.random() * 10 - 5),
-            window.innerHeight / 2 + (Math.random() * 10 - 5)
+            window.innerWidth / 2 + (Math.random() * 6 - 3),
+            window.innerHeight / 2 + (Math.random() * 6 - 3)
           )
           .filter(
             (el) =>
