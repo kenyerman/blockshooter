@@ -90,6 +90,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       conn.send(JSON.stringify({ FACES }));
       conn.send(serializeState());
       conn.send(JSON.stringify({ stats }));
+      conn.send(
+        JSON.stringify({
+          damages: Array.from(document.querySelectorAll("[damage]")).map(
+            (el) => ({
+              damageFaceId: el.id.slice(1),
+              damageFace: el.getAttribute("damage"),
+            })
+          ),
+        })
+      );
     });
 
     conn.on("data", (data) => {

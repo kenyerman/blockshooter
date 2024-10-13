@@ -99,7 +99,14 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   registerCallback((peer, data) => {
-    const { FACES: incomingFaces, removeFace, addFace } = data;
+    const {
+      FACES: incomingFaces,
+      removeFace,
+      addFace,
+      damageFace,
+      damageFaceId,
+      damages,
+    } = data;
 
     if (incomingFaces) {
       FACES = incomingFaces;
@@ -124,6 +131,27 @@ document.addEventListener("DOMContentLoaded", () => {
     if (addFace) {
       FACES[addFace] = "red";
       drawFace(addFace);
+    }
+
+    if (damageFace && damageFaceId) {
+      document
+        .querySelector(`#k${damageFaceId}`)
+        .style.setProperty("--grid-size", 100 / (damageFace * 2) + "%");
+      document
+        .querySelector(`#k${damageFaceId}`)
+        .setAttribute("damage", damageFace);
+    }
+
+    if (damages) {
+      damages.forEach(({ damageFaceId, damageFace }) => {
+        console.log(damageFaceId, damageFace);
+        document
+          .querySelector(`#k${damageFaceId}`)
+          ?.style?.setProperty("--grid-size", 100 / (damageFace * 2) + "%");
+        document
+          .querySelector(`#k${damageFaceId}`)
+          ?.setAttribute("damage", damageFace);
+      });
     }
   });
 });

@@ -438,13 +438,26 @@ document.addEventListener("DOMContentLoaded", () => {
           .sort((a, b) => a?.dist2 - b?.dist2)[0];
 
         if (target?.el) {
-          FACES[target.el.id.slice(1)] = undefined;
-          target.el.parentElement.remove();
-          broadcast(
-            JSON.stringify({
-              removeFace: target.el.id.slice(1),
-            })
-          );
+          const damage = (+target.el.getAttribute("damage") || 0) + 1;
+          target.el.setAttribute("damage", damage);
+          target.el.style.setProperty("--grid-size", 100 / (damage * 2) + "%");
+
+          if (10 < damage) {
+            FACES[target.el.id.slice(1)] = undefined;
+            target.el.parentElement.remove();
+            broadcast(
+              JSON.stringify({
+                removeFace: target.el.id.slice(1),
+              })
+            );
+          } else {
+            broadcast(
+              JSON.stringify({
+                damageFaceId: target.el.id.slice(1),
+                damageFace: damage,
+              })
+            );
+          }
         }
 
         if (target?.playerId) {

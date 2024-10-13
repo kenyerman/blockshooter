@@ -67,6 +67,46 @@ body {
   height: var(--face-size);
   border: 1px solid #000;
 
+  &[damage]::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    /* --grid-size: 25%; */
+    --grid-strength: 1px;
+    --grid-dash: 0px;
+    --grid-gap: 0px;
+    --grid-color: black;
+    --paper-color: transparent;
+
+    background-color: var(--paper-color);
+    background-size: var(--grid-dash) var(--grid-dash),
+      var(--grid-size) var(--grid-size);
+    background-image: linear-gradient(
+        to bottom,
+        transparent var(--grid-gap),
+        var(--paper-color) var(--grid-gap)
+      ),
+      linear-gradient(
+        to right,
+        var(--grid-color) var(--grid-strength),
+        transparent var(--grid-strength)
+      ),
+      linear-gradient(
+        to right,
+        transparent var(--grid-gap),
+        var(--paper-color) var(--grid-gap)
+      ),
+      linear-gradient(
+        to bottom,
+        var(--grid-color) var(--grid-strength),
+        transparent var(--grid-strength)
+      );
+  }
+
   &.highlight {
     background-color: rgba(255, 0, 0, 0.5) !important;
   }
