@@ -109,6 +109,14 @@ document.addEventListener("DOMContentLoaded", () => {
     } = data;
 
     if (incomingFaces) {
+      for (const key in incomingFaces) {
+        if (key in FACES && FACES[key] === incomingFaces[key]) {
+          continue;
+        }
+
+        drawFace(key, incomingFaces[key]);
+      }
+
       FACES = incomingFaces;
 
       document.querySelectorAll("#scene .face-wrapper").forEach((el) => {
