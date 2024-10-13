@@ -1,3 +1,5 @@
+"use strict";
+
 const pannerConfig = {
   panningModel: "HRTF",
   refDistance: FACE_SIZE,

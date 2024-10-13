@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreboard = document.querySelector("#scoreboard");
 
   document.addEventListener("keydown", (e) => {
-    if (e.key !== "Tab") {
+    if (e.key !== "Tab" || chatOpen) {
       return;
     }
 

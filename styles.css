@@ -509,3 +509,63 @@ dialog.menu {
     -webkit-backdrop-filter: blur(10px);
   }
 }
+
+#chat {
+  position: fixed;
+  bottom: 110px;
+  left: 32px;
+  width: 370px;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .message {
+    font-size: 18px;
+    color: darkorange;
+
+    .name {
+      color: darkgoldenrod;
+      font-weight: 800;
+    }
+  }
+}
+
+#chat-input {
+  position: fixed;
+  top: 32px;
+  left: 32px;
+  width: 370px;
+
+  display: flex;
+  gap: 6px;
+  font-size: 18px;
+  color: darkgoldenrod;
+
+  opacity: 0;
+
+  &.active {
+    opacity: 1;
+  }
+
+  transition: opacity 120ms ease;
+
+  input {
+    color: darkorange;
+    font-size: 18px;
+    font-family: monospace, monospace;
+    pointer-events: none;
+
+    flex: 1 1 auto;
+    border-radius: 0;
+    padding: 0;
+    border: none;
+    font-size: 16px;
+    background: none;
+
+    &:focus {
+      outline: none;
+    }
+  }
+}

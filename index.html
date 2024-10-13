@@ -24,6 +24,7 @@
     <script src="partner.js" defer></script>
     <script src="snd.js" defer></script>
     <script src="scoreboard.js" defer></script>
+    <script src="chat.js" defer></script>
   </head>
   <body>
     <div class="viewport-wrapper">
@@ -90,6 +91,11 @@
         <label>ammo</label>
       </div>
     </div>
+    <div id="chat-input">
+      <label>say:</label>
+      <input />
+    </div>
+    <div id="chat"></div>
     <dialog class="menu">
       <h1>blockshooter</h1>
       <h2>controls:</h2>
@@ -148,6 +154,10 @@
           <div class="item">
             <div class="key">Tab</div>
             <label>scoreboard</label>
+          </div>
+          <div class="item">
+            <div class="key">C</div>
+            <label>activate chat</label>
           </div>
           <div style="flex: 1 1 auto"></div>
           <label>misc</label>

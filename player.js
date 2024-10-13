@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   document.addEventListener("click", () => {
-    if (dialog.open || document.pointerLockElement) {
+    if (dialog.open || document.pointerLockElement || chatOpen) {
       return;
     }
 
@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("mousemove", (event) => {
-    if (!document.pointerLockElement) {
+    if (!document.pointerLockElement || chatOpen) {
       return;
     }
 
@@ -181,9 +181,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const keys = {};
+  let keys = {};
   document.addEventListener("keydown", (event) => {
-    if (!document.pointerLockElement) {
+    if (!document.pointerLockElement || chatOpen) {
       return;
     }
 
@@ -196,13 +196,18 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (chatOpen) {
+      keys = {};
+      return;
+    }
+
     event.preventDefault();
     keys[event.key.toLowerCase()] = false;
   });
 
   let shooting = false;
   document.addEventListener("mousedown", (event) => {
-    if (!document.pointerLockElement) {
+    if (!document.pointerLockElement || chatOpen) {
       return;
     }
 
