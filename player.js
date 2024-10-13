@@ -187,6 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    event.preventDefault();
     keys[event.key.toLowerCase()] = true;
   });
 
@@ -195,6 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    event.preventDefault();
     keys[event.key.toLowerCase()] = false;
   });
 
@@ -285,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
       z: keys[" "] ?? false,
     };
 
-    ducking = keys["ctrl"] || keys["c"] || keys["command"];
+    ducking = keys["shift"];
 
     if (v.x && v.y) {
       v.x *= 0.7071067811865475;
