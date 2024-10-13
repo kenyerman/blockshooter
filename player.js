@@ -158,8 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    look.p += event.movementY;
-    look.y += event.movementX;
+    look.p += event.movementY / (aimDownSights ? 14 : 2);
+    look.y += event.movementX / (aimDownSights ? 14 : 2);
     look.y %= 360;
 
     if (look.p > 90) {
@@ -230,10 +230,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (event.button === 2) {
+      aimDownSights = true;
       document
         .querySelector("#viewmodel-animation .viewmodel")
         .classList.add("aim-down-sights");
-      aimDownSights = true;
+
+      document.querySelector(".aim-backdrop").classList.add("active");
+
+      document
+        .querySelector(":root")
+        .style.setProperty("--perspective", `${PERSPECTIVE}px`);
     }
   });
 
@@ -252,10 +258,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (event.button === 2) {
+      aimDownSights = false;
       document
         .querySelector("#viewmodel-animation .viewmodel")
         .classList.remove("aim-down-sights");
-      aimDownSights = false;
+
+      document.querySelector(".aim-backdrop").classList.remove("active");
+
+      document
+        .querySelector(":root")
+        .style.setProperty("--perspective", `${PERSPECTIVE}px`);
     }
   });
 
@@ -273,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
       z: keys[" "] ?? false,
     };
 
-    ducking = keys["c"];
+    ducking = keys["ctrl"] || keys["c"] || keys["command"];
 
     if (v.x && v.y) {
       v.x *= 0.7071067811865475;
