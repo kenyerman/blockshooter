@@ -293,7 +293,6 @@ dialog.menu {
   flex-direction: column;
   gap: 16px;
   align-items: center;
-  perspective: var(--perspective);
   user-select: none;
 
   &::backdrop {
@@ -305,12 +304,14 @@ dialog.menu {
   h1 {
     font-size: 32px;
     text-align: center;
+    margin: 0;
   }
 
   h2 {
     width: 100%;
     font-size: 24px;
     text-align: left;
+    margin: 0;
   }
 
   .row {
@@ -376,9 +377,14 @@ dialog.menu {
     width: 100%;
     flex: 0 0 fit-content;
     display: flex;
-    flex-direction: column;
     gap: 16px;
-    align-items: center;
+  }
+
+  .btn-holder {
+    flex: 0 0 140px;
+    width: 140px;
+    height: 140px;
+    perspective: var(--perspective);
   }
 
   button {
