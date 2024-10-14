@@ -2,6 +2,39 @@
 
 let stats = {};
 
+const showDeathMessage = (killerId, victimId) => {
+  const killerName = stats[killerId]?.name || "Unknown";
+  const victimName = stats[victimId]?.name || "Unknown";
+
+  const killer = document.createElement("span");
+  killer.textContent = killerName;
+  if (killerId === peer.id) {
+    killer.classList.add("self");
+  }
+
+  const message = document.createElement("span");
+  message.textContent = " killed ";
+
+  const victim = document.createElement("span");
+  victim.textContent = victimName;
+  if (victimId === peer.id) {
+    victim.classList.add("self");
+  }
+
+  const messageElement = document.createElement("div");
+  messageElement.classList.add("message");
+  messageElement.appendChild(killer);
+  messageElement.appendChild(message);
+  messageElement.appendChild(victim);
+
+  const deathmessages = document.querySelector("#deathmessages");
+  deathmessages.appendChild(messageElement);
+
+  if (4 < deathmessages.children.length) {
+    deathmessages.removeChild(deathmessages.children[0]);
+  }
+};
+
 const refreshTable = () => {
   const tbody = scoreboard.querySelector("#scoreboard tbody");
   tbody.innerHTML = "";
@@ -61,6 +94,8 @@ const getKilledByPeer = (killedById) => {
   };
 
   broadcast(JSON.stringify({ killedById, deaths }));
+
+  showDeathMessage(killedById, peer.id);
 };
 
 const gainScore = (amount) => {
@@ -124,6 +159,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ...stats[killedById],
         kills: (stats[killedById]?.kills || 0) + 1,
       };
+
+      showDeathMessage(killedById, peer);
     }
 
     if (incomingStats) {

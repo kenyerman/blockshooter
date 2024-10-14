@@ -575,3 +575,36 @@ dialog.menu {
     }
   }
 }
+
+#deathmessages {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .message {
+    font-size: 16px;
+    padding: 6px 16px;
+    color: red;
+
+    white-space: nowrap;
+    overflow: hidden;
+
+    background-color: #000000cc;
+    border-radius: 12px;
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    &:has(.self) {
+      background-color: #ffffffcc;
+    }
+
+    .self {
+      color: green;
+    }
+  }
+}
