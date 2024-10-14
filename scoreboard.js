@@ -6,10 +6,18 @@ const refreshTable = () => {
   const tbody = scoreboard.querySelector("#scoreboard tbody");
   tbody.innerHTML = "";
 
-  Object.values(stats)
-    .sort((a, b) => b.score - a.score)
-    .forEach((data) => {
+  document.querySelector("#scoreboard h1 div").textContent = `players: ${
+    Object.keys(stats).length
+  } / ${MAX_CLIENTS}`;
+
+  Object.entries(stats)
+    .sort(([, a], [, b]) => (b.score || 0) - (a.score || 0))
+    .forEach(([id, data]) => {
       const tr = document.createElement("tr");
+
+      if (id === peer.id) {
+        tr.classList.add("self");
+      }
 
       const name = document.createElement("td");
       const score = document.createElement("td");

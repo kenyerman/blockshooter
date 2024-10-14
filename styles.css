@@ -317,7 +317,6 @@ dialog.menu {
     width: 100%;
     display: flex;
     gap: 40px;
-    align-items: center;
     justify-content: space-evenly;
   }
 
@@ -326,7 +325,6 @@ dialog.menu {
     flex-direction: column;
     align-items: center;
     gap: 16px;
-    height: 100%;
 
     > .item {
       width: 100%;
@@ -439,6 +437,10 @@ dialog.menu {
     line-height: 2;
     margin: 0;
     margin-bottom: 40px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
   }
 
   &.active {
@@ -456,6 +458,10 @@ dialog.menu {
 
     tr {
       height: 40px;
+
+      &.self {
+        color: orange;
+      }
     }
 
     tr:nth-child(even) {

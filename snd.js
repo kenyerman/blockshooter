@@ -8,6 +8,10 @@ const pannerConfig = {
   distanceModel: "inverse",
 };
 
+// FIXME: creating new Howl instances every time a sound is played is wasting memory
+//        global Howler state holds references to them, so they can't be garbage collected
+//        instead, we should create a single audio file and sprites for all sounds, then
+//        instantiate them per player, and move them around as needed
 const sounds = {
   shot: () =>
     new Howl({
