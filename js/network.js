@@ -103,13 +103,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     conn.on("data", (data) => {
+      let parsedData;
       try {
-        data = JSON.parse(data);
-        callbacks.forEach((f) => f(conn.peer, data));
+        parsedData = JSON.parse(data);
       } catch (e) {
         console.warn("invalid data", data);
         return;
       }
+
+      callbacks.forEach((f) => f(conn.peer, parsedData));
     });
     conn.on("close", () => {
       console.log("closing connection to", conn.peer);

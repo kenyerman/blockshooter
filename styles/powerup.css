@@ -1,0 +1,51 @@
+.powerup {
+  --a: var(--powerup-size);
+  --b: var(--powerup-size);
+  --c: var(--powerup-size);
+
+  > .box {
+    transform-origin: calc(var(--powerup-size) / 2)
+      calc(var(--powerup-size) / 2);
+
+    animation: powerupSpin 3s linear infinite;
+  }
+
+  > .box > div {
+    animation: powerupFadeout 300ms linear infinite alternate;
+    animation-delay: calc(2 * var(--powerup-life) / 3);
+  }
+
+  &.jetpack > .box > div {
+    background: linear-gradient(45deg, red, yellow);
+  }
+
+  &.ammo > .box > div {
+    background: linear-gradient(45deg, black, green);
+  }
+
+  &.health > .box > div {
+    background: linear-gradient(45deg, red, blue);
+  }
+
+  &.bricks > .box > div {
+    background: linear-gradient(45deg, red, black);
+  }
+}
+
+@keyframes powerupSpin {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+@keyframes powerupFadeout {
+  50% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
