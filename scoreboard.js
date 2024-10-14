@@ -27,6 +27,10 @@ const showDeathMessage = (killerId, victimId) => {
   messageElement.appendChild(message);
   messageElement.appendChild(victim);
 
+  messageElement.addEventListener("animationend", () => {
+    messageElement.remove();
+  });
+
   const deathmessages = document.querySelector("#deathmessages");
   deathmessages.appendChild(messageElement);
 

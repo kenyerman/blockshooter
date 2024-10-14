@@ -605,6 +605,8 @@ dialog.menu {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
 
+    animation: 4s deathmsgFadeout 300ms forwards;
+
     &:has(.self) {
       background-color: #ffffffcc;
     }
@@ -612,5 +614,15 @@ dialog.menu {
     .self {
       color: green;
     }
+  }
+}
+
+@keyframes deathmsgFadeout {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
   }
 }
