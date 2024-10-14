@@ -1,0 +1,40 @@
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: true;
+}
+
+@property --distance {
+  syntax: "<length>";
+  initial-value: 0px;
+  inherits: true;
+}
+
+.score-msg {
+  --angle: 0deg;
+
+  font-size: 30px;
+  color: yellow;
+  mix-blend-mode: difference;
+
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  transform: translate(
+    calc(-50% + (sin(120deg + var(--angle)) * var(--distance))),
+    calc(-50% + (cos(120deg + var(--angle)) * var(--distance)))
+  );
+
+  animation: scoreMsgFadeout 1s forwards;
+}
+
+@keyframes scoreMsgFadeout {
+  0% {
+    opacity: 1;
+    --distance: 30px;
+  }
+  100% {
+    opacity: 0;
+    --distance: 100px;
+  }
+}

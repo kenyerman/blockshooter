@@ -110,6 +110,17 @@ const gainScore = (amount) => {
     score,
   };
 
+  const scoreMsg = document.createElement("div");
+  scoreMsg.classList.add("score-msg");
+  scoreMsg.textContent = `+${amount}`;
+  scoreMsg.style.setProperty("--angle", `${Math.random() * 120}deg`);
+
+  scoreMsg.addEventListener("animationend", () => {
+    scoreMsg.remove();
+  });
+
+  document.body.appendChild(scoreMsg);
+
   broadcast(JSON.stringify({ score }));
 };
 
