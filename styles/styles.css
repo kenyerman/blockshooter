@@ -1,0 +1,189 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: monospace, monospace;
+  overflow: hidden;
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+
+  font-size: 10px;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      0deg,
+      transparent,
+      color-mix(in srgb, yellow 90%, transparent)
+    );
+    background-size: 2px 2px;
+    z-index: 1;
+    pointer-events: none;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  transform-style: preserve-3d;
+}
+
+.viewport-wrapper {
+  perspective: var(--perspective);
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+
+  transition: 120ms perspective ease;
+}
+
+#viewport {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+#scene {
+  width: 0;
+  height: 0;
+
+  position: relative;
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+.face {
+  width: var(--face-size);
+  height: var(--face-size);
+  border: 1px solid #000;
+
+  &[damage]::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    /* --grid-size: 25%; */
+    --grid-strength: 1px;
+    --grid-dash: 0px;
+    --grid-gap: 0px;
+    --grid-color: black;
+    --paper-color: transparent;
+
+    background-color: var(--paper-color);
+    background-size: var(--grid-dash) var(--grid-dash),
+      var(--grid-size) var(--grid-size);
+    background-image: linear-gradient(
+        to bottom,
+        transparent var(--grid-gap),
+        var(--paper-color) var(--grid-gap)
+      ),
+      linear-gradient(
+        to right,
+        var(--grid-color) var(--grid-strength),
+        transparent var(--grid-strength)
+      ),
+      linear-gradient(
+        to right,
+        transparent var(--grid-gap),
+        var(--paper-color) var(--grid-gap)
+      ),
+      linear-gradient(
+        to bottom,
+        var(--grid-color) var(--grid-strength),
+        transparent var(--grid-strength)
+      );
+  }
+
+  &.highlight {
+    background-color: rgba(255, 0, 0, 0.5) !important;
+  }
+
+  &.x {
+    transform: rotateY(-90deg)
+      translate3d(calc(var(--face-size) / 2), 0, calc(var(--face-size) / 2));
+  }
+
+  &.y {
+    transform: rotateX(90deg)
+      translate3d(0, calc(var(--face-size) / 2), calc(var(--face-size) / 2));
+  }
+
+  &.z {
+    transform: translateZ(0);
+  }
+}
+
+.box > div {
+  position: absolute;
+  border: 1px solid #000;
+  background-color: blueviolet;
+
+  &:nth-child(1) {
+    width: var(--a);
+    height: var(--b);
+
+    transform: rotateY(-90deg)
+      translate3d(calc(var(--a) / 2), 0, calc(var(--a) / 2));
+  }
+
+  &:nth-child(2) {
+    width: var(--c);
+    height: var(--a);
+
+    transform: rotateX(90deg)
+      translate3d(0, calc(var(--a) / 2), calc(var(--a) / 2));
+  }
+
+  &:nth-child(3) {
+    width: var(--c);
+    height: var(--b);
+
+    transform: translateZ(0);
+  }
+
+  &:nth-child(4) {
+    width: var(--a);
+    height: var(--b);
+
+    transform: rotateY(90deg)
+      translate3d(
+        calc(var(--a) / -2),
+        0,
+        calc(var(--c) - var(--a) + var(--a) / 2)
+      );
+  }
+
+  &:nth-child(5) {
+    width: var(--c);
+    height: var(--a);
+
+    transform: rotateX(90deg)
+      translate3d(
+        0,
+        calc(var(--a) / 2),
+        calc(var(--a) - var(--b) + var(--a) / -2)
+      );
+  }
+
+  &:nth-child(6) {
+    width: var(--c);
+    height: var(--b);
+
+    transform: translateZ(var(--a));
+  }
+}

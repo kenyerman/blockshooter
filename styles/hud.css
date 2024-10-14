@@ -1,0 +1,45 @@
+.hud {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 120px;
+  padding: 24px 32px;
+
+  display: flex;
+  gap: 32px;
+
+  > .placeholder {
+    flex: 1 1 auto;
+  }
+
+  > div:not(.placeholder) {
+    height: 100%;
+    flex: 0 0 170px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* gap: 16px; */
+
+    border-radius: 24px;
+    background: color-mix(in srgb, orangered 50%, transparent);
+    border: 1px solid orangered;
+    box-shadow: 0 0 5px 1px orangered;
+
+    > span,
+    > label {
+      color: orangered;
+    }
+
+    > span {
+      font-size: 32px;
+    }
+
+    > label {
+      font-size: 16px;
+      color: orangered;
+      text-transform: uppercase;
+    }
+  }
+}
