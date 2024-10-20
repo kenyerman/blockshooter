@@ -94,73 +94,75 @@
     }
   }
 
-  > .left-leg {
-    transform-origin: 0 0 25px;
-    animation: swing 0.3s ease-in-out infinite alternate-reverse;
+  > .legs {
+    > .left-leg {
+      transform-origin: 0 0 25px;
+      animation: swing 0.3s ease-in-out infinite alternate-reverse;
 
-    > .left-leg-upper {
-      position: absolute;
+      > .left-leg-upper {
+        position: absolute;
 
-      --a: 14px;
-      --b: 5px;
-      --c: 5px;
+        --a: 14px;
+        --b: 5px;
+        --c: 5px;
 
-      transform: translate3d(
-        calc(var(--c) / -2),
-        calc(var(--b) / -2 - 5px),
-        14px
-      );
-    }
-
-    > .left-leg-lower {
-      position: absolute;
-
-      --a: 14px;
-      --b: 5px;
-      --c: 5px;
-
-      transform-origin: calc(var(--c) / 2) 0 var(--a);
-      transform: translate3d(
+        transform: translate3d(
           calc(var(--c) / -2),
           calc(var(--b) / -2 - 5px),
-          0px
-        )
-        rotateY(-55deg);
-    }
-  }
+          14px
+        );
+      }
 
-  > .right-leg {
-    transform-origin: 0 0 25px;
-    animation: swing 0.3s ease-in-out infinite alternate;
+      > .left-leg-lower {
+        position: absolute;
 
-    > .right-leg-upper {
-      position: absolute;
+        --a: 14px;
+        --b: 5px;
+        --c: 5px;
 
-      --a: 14px;
-      --b: 5px;
-      --c: 5px;
-
-      transform: translate3d(
-        calc(var(--c) / -2),
-        calc(var(--b) / -2 + 5px),
-        14px
-      );
+        transform-origin: calc(var(--c) / 2) 0 var(--a);
+        transform: translate3d(
+            calc(var(--c) / -2),
+            calc(var(--b) / -2 - 5px),
+            0px
+          )
+          rotateY(-55deg);
+      }
     }
 
-    > .right-leg-lower {
-      position: absolute;
+    > .right-leg {
+      transform-origin: 0 0 25px;
+      animation: swing 0.3s ease-in-out infinite alternate;
 
-      --a: 14px;
-      --b: 5px;
-      --c: 5px;
+      > .right-leg-upper {
+        position: absolute;
 
-      transform-origin: calc(var(--c) / 2) 0 var(--a);
-      transform: translate3d(
+        --a: 14px;
+        --b: 5px;
+        --c: 5px;
+
+        transform: translate3d(
           calc(var(--c) / -2),
           calc(var(--b) / -2 + 5px),
-          0px
-        )
-        rotateY(-55deg);
+          14px
+        );
+      }
+
+      > .right-leg-lower {
+        position: absolute;
+
+        --a: 14px;
+        --b: 5px;
+        --c: 5px;
+
+        transform-origin: calc(var(--c) / 2) 0 var(--a);
+        transform: translate3d(
+            calc(var(--c) / -2),
+            calc(var(--b) / -2 + 5px),
+            0px
+          )
+          rotateY(-55deg);
+      }
     }
   }
 

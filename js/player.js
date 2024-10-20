@@ -5,6 +5,7 @@ let playerName = "player";
 let pos = { x: 100, y: 100, z: 0 };
 let look = { p: 0, y: 0, r: 0 };
 let velocity = { x: 0, y: 0, z: 0 };
+let velocitySelf = { x: 0, y: 0, z: 0 };
 
 const SPAWN_POINTS = [
   { x: 100, y: 100, z: 0 },
@@ -48,6 +49,11 @@ const serializeState = () =>
     y: Math.round(pos.y),
     z: Math.round(pos.z),
     yaw: Math.round(look.y),
+    move: {
+      x: Math.round(velocitySelf.x),
+      y: Math.round(velocitySelf.y),
+      z: Math.round(velocitySelf.z),
+    },
   });
 
 const degreesToRadians = (deg) => {
@@ -334,6 +340,8 @@ document.addEventListener("DOMContentLoaded", () => {
     v.x *= SPEED * (ducking || aimDownSights ? 0.5 : 1);
     v.y *= SPEED * (ducking || aimDownSights ? 0.5 : 1);
     v.z *= SPEED * 2;
+
+    velocitySelf = { ...v };
 
     velocity.x += v.x * Math.cos(angle) + v.y * Math.sin(angle);
     velocity.y += v.x * Math.sin(angle) - v.y * Math.cos(angle);
