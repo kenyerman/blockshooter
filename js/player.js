@@ -16,7 +16,10 @@ const PERSPECTIVE = 1000;
 const SPEED = 5;
 const BULLET_RATE = 100;
 const STEP_RATE = 400;
+const JETPACK_SND_RATE = 500;
 const MAX_AMMO = 40;
+const MAX_JETPACK = 100;
+const MAX_BRICKS = 50;
 
 let ducking = false;
 let jumping = false;
@@ -29,6 +32,9 @@ let stepcount = 0;
 
 let health = 100;
 let armor = 100;
+
+let jetpack = 0;
+let bricks = 0;
 
 const getWorld = () => ({
   x: Math.round(pos.x / FACE_SIZE),
@@ -143,6 +149,22 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#ammo").textContent = ammo;
     document.querySelector("#health").textContent = health;
     document.querySelector("#armor").textContent = armor;
+
+    document
+      .querySelector("#powerup-badges .badge.jetpack")
+      ?.style?.setProperty?.("--powerup-progress", jetpack / MAX_JETPACK);
+
+    document
+      .querySelector("#powerup-badges .badge.bricks")
+      ?.style?.setProperty?.("--powerup-progress", bricks / MAX_BRICKS);
+
+    if (jetpack < 0.1) {
+      document.querySelector("#powerup-badges .badge.jetpack")?.remove?.();
+    }
+
+    if (bricks < 1) {
+      document.querySelector("#powerup-badges .badge.bricks")?.remove?.();
+    }
   };
 
   document.addEventListener("click", () => {
@@ -218,6 +240,8 @@ document.addEventListener("DOMContentLoaded", () => {
         FACES[face] = "red";
         highlight.classList.remove("highlight");
         highlight.style.backgroundColor = "red";
+        bricks--;
+        play("bricks_use");
 
         broadcast(
           JSON.stringify({
@@ -280,11 +304,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let lastframe = Date.now();
   let lastframeStep = Date.now();
+  let lastframeJetpack = Date.now();
   const loop = () => {
     const stateBefore = serializeState();
 
     const angle = (look.y * Math.PI) / 180;
     const world = getWorld();
+
+    const powerupId = faceKey(world.x, world.y, world.z, undefined);
+    const powerType = powerups[powerupId];
+
+    if (powerType) {
+      takePowerup(powerupId, powerType);
+    }
 
     const v = {
       x: (keys["a"] ?? false) - (keys["d"] ?? false),
@@ -341,7 +373,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // falling
     if (!FACES[faceKey(world.x, world.y, world.z, "z")]) {
-      velocity.z -= 1;
+      if (keys[" "] && jetpack) {
+        jetpack -= 0.5;
+        jetpack = Math.max(0, jetpack);
+
+        if (JETPACK_SND_RATE <= Date.now() - lastframeJetpack) {
+          lastframeJetpack = Date.now();
+          play("jetpack_use");
+        }
+      } else {
+        velocity.z -= 1;
+      }
     } else {
       // hit the ground
 
@@ -460,6 +502,13 @@ document.addEventListener("DOMContentLoaded", () => {
           const damage = (+target.el.getAttribute("damage") || 0) + 1;
           target.el.setAttribute("damage", damage);
           target.el.style.setProperty("--grid-size", 100 / (damage * 2) + "%");
+          const coords = faceKeyFrom(target.el.id.slice(1));
+
+          play_world("wall_hit", undefined, {
+            x: Number.parseInt(coords.x) * FACE_SIZE,
+            y: Number.parseInt(coords.y) * FACE_SIZE,
+            z: Number.parseInt(coords.z) * FACE_SIZE,
+          });
 
           if (10 < damage) {
             FACES[target.el.id.slice(1)] = undefined;
@@ -490,7 +539,9 @@ document.addEventListener("DOMContentLoaded", () => {
           gainScore(target.damage);
         }
 
-        ammo--;
+        if (!activePowerups["ammo"]) {
+          ammo--;
+        }
 
         play("shot");
 
@@ -518,7 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.querySelector(".highlight")?.parentElement?.remove();
-    if (keys["e"]) {
+    if (keys["e"] && 0 < bricks) {
       const target = document
         .elementsFromPoint(
           window.innerWidth / 2 + (Math.random() * 6 - 3),
@@ -619,6 +670,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   registerCallback((peer, data) => {
     const { damage, v } = data;
+
+    if (activePowerups["health"]) {
+      return;
+    }
 
     if (damage) {
       health -= damage * (armor ? 0.5 : 1);

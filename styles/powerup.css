@@ -1,3 +1,39 @@
+:root {
+  --powerup-primary-jetpack: yellow;
+  --powerup-accent-jetpack: red;
+
+  --powerup-primary-ammo: green;
+  --powerup-accent-ammo: black;
+
+  --powerup-primary-health: blue;
+  --powerup-accent-health: red;
+
+  --powerup-primary-bricks: red;
+  --powerup-accent-bricks: black;
+}
+
+div {
+  &.jetpack {
+    --powerup-primary: var(--powerup-primary-jetpack);
+    --powerup-accent: var(--powerup-accent-jetpack);
+  }
+
+  &.ammo {
+    --powerup-primary: var(--powerup-primary-ammo);
+    --powerup-accent: var(--powerup-accent-ammo);
+  }
+
+  &.health {
+    --powerup-primary: var(--powerup-primary-health);
+    --powerup-accent: var(--powerup-accent-health);
+  }
+
+  &.bricks {
+    --powerup-primary: var(--powerup-primary-bricks);
+    --powerup-accent: var(--powerup-accent-bricks);
+  }
+}
+
 .powerup {
   --a: var(--powerup-size);
   --b: var(--powerup-size);
@@ -13,22 +49,12 @@
   > .box > div {
     animation: powerupFadeout 300ms linear infinite alternate;
     animation-delay: calc(2 * var(--powerup-life) / 3);
-  }
 
-  &.jetpack > .box > div {
-    background: linear-gradient(45deg, red, yellow);
-  }
-
-  &.ammo > .box > div {
-    background: linear-gradient(45deg, black, green);
-  }
-
-  &.health > .box > div {
-    background: linear-gradient(45deg, red, blue);
-  }
-
-  &.bricks > .box > div {
-    background: linear-gradient(45deg, red, black);
+    background: linear-gradient(
+      45deg,
+      var(--powerup-accent),
+      var(--powerup-primary)
+    );
   }
 }
 
@@ -47,5 +73,136 @@
   }
   50% {
     opacity: 0;
+  }
+}
+
+.powerup-scanline {
+  --scanline-height: 35px;
+  --opacity: 75%;
+
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: calc(-1 * var(--scanline-height));
+  left: 0;
+  pointer-events: none;
+
+  background: linear-gradient(
+    180deg,
+    transparent calc(100% - var(--scanline-height)),
+    color-mix(in srgb, var(--powerup-primary) var(--opacity), transparent)
+      calc(100% - 1 * var(--scanline-height) / 5),
+    color-mix(in srgb, var(--powerup-accent) var(--opacity), transparent)
+      calc(100% - 4 * var(--scanline-height) / 5),
+    transparent
+  );
+  background-position: 0px 0px;
+
+  animation: 2s linear powerupScanline;
+
+  .text {
+    position: absolute;
+    right: 0;
+    bottom: 25%;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    text-transform: uppercase;
+    color: var(--powerup-primary);
+    text-shadow: 0 0 5px var(--powerup-accent);
+
+    animation: powerupText 100ms ease infinite;
+  }
+
+  /* limits: works for only 2 powerup pickups simultaneously */
+  & + .powerup-scanline > .text {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes powerupScanline {
+  0% {
+    background-position: 0px 0vh;
+  }
+  100% {
+    background-position: 0px 100vh;
+  }
+}
+
+@keyframes powerupText {
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@property --powerup-progress {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+#powerup-badges {
+  position: fixed;
+  top: 24px;
+  left: 32px;
+
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  > .badge {
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--powerup-primary) 50%, transparent);
+    border: 1px solid var(--powerup-primary);
+    box-shadow: 0 0 5px 1px var(--powerup-primary);
+    opacity: min(1, calc(10 * var(--powerup-progress)));
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+
+    &.timed {
+      animation: progress var(--powerup-effect-time) linear;
+    }
+
+    svg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    circle {
+      stroke: var(--powerup-primary);
+      stroke-dasharray: calc(1300 * var(--powerup-progress)) 2900;
+      stroke-width: 50;
+      stroke-linecap: round;
+      fill: none;
+      transform: translateY(30px) rotate(141deg);
+      transform-origin: center center;
+    }
+  }
+}
+
+@keyframes progress {
+  from {
+    --powerup-progress: 1;
+  }
+  to {
+    --powerup-progress: 0;
   }
 }

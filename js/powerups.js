@@ -1,16 +1,31 @@
 "use strict";
 
-const POWERUP_INTERVAL = 5000;
-const POWERUP_LIFE = 10000;
+const POWERUP_INTERVAL = 5_000;
+const POWERUP_LIFE = 10_000;
 const POWERUP_SIZE = 10;
 let lastPowerupGenerationTime = undefined;
 
+const POWERUP_EFFECT_TIME = 15_000;
+
 const powerups = {};
+let takePowerup;
+
+const activePowerups = {};
 
 document.addEventListener("DOMContentLoaded", () => {
   const root = document.querySelector(":root");
   root.style.setProperty("--powerup-life", `${POWERUP_LIFE}ms`);
   root.style.setProperty("--powerup-size", `${POWERUP_SIZE}px`);
+  root.style.setProperty("--powerup-effect-time", `${POWERUP_EFFECT_TIME}ms`);
+
+  const timeouts = {};
+
+  const emojis = {
+    ammo: "🔫",
+    health: "❤️",
+    jetpack: "🚀",
+    bricks: "🧱",
+  };
 
   const drawPowerup = (id, type) => {
     const { x, y, z } = faceKeyFrom(id);
@@ -62,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#k" + powerupId)?.remove();
   };
 
-  const takePowerup = (powerupId, type) => {
+  takePowerup = (powerupId, type) => {
     removePowerup(powerupId);
     broadcast(
       JSON.stringify({
@@ -70,13 +85,75 @@ document.addEventListener("DOMContentLoaded", () => {
       })
     );
 
-    // TODO: Apply powerup to the player
-  };
+    gainScore(10);
 
-  addPowerup({
-    type: "jetpack",
-    id: faceKey(3, 3, 0),
-  });
+    clearTimeout(timeouts[type]);
+    timeouts[type] = setTimeout(() => {
+      activePowerups[type] = false;
+    }, POWERUP_EFFECT_TIME);
+
+    activePowerups[type] = true;
+
+    if (type === "ammo") {
+      ammo = MAX_AMMO;
+    }
+
+    if (type === "health") {
+      health = 100;
+    }
+
+    if (type === "jetpack") {
+      jetpack = MAX_JETPACK;
+    }
+
+    if (type === "bricks") {
+      bricks = Math.min(MAX_BRICKS, bricks + 10);
+    }
+
+    const scanline = document.createElement("div");
+    scanline.classList.add("powerup-scanline");
+    scanline.classList.add(type);
+    const text = document.createElement("div");
+    text.classList.add("text");
+    text.textContent = (() => {
+      switch (type) {
+        case "ammo":
+          return `Restocked Ammo + Infinite Ammo for ${
+            POWERUP_EFFECT_TIME / 1000
+          }s`;
+        case "health":
+          return `Restored Health + Invulnerability for ${
+            POWERUP_EFFECT_TIME / 1000
+          }s`;
+        case "jetpack":
+          return "Jetpack refueled";
+        case "bricks":
+          return "Bricks picked up";
+      }
+    })();
+    scanline.appendChild(text);
+    document.body.appendChild(scanline);
+
+    scanline.addEventListener("animationend", () => {
+      scanline.remove();
+    });
+
+    document.querySelector(`#powerup-badges .badge.${type}`)?.remove?.();
+    const badge = document.createElement("div");
+    badge.classList.add("badge");
+    badge.classList.add(type);
+    if (type === "ammo" || type === "health") {
+      badge.classList.add("timed");
+    }
+    badge.innerHTML = `<svg viewBox="0 0 800 800"><circle cx="400" cy="400" r="290" /></svg>${emojis[type]}`;
+
+    badge.addEventListener("animationend", () => {
+      badge.remove();
+    });
+    document.querySelector(`#powerup-badges`).appendChild(badge);
+
+    play(type);
+  };
 
   setInterval(() => {
     const now = Date.now();
@@ -94,18 +171,9 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     const powerup = {
-      type: (() => {
-        switch (Math.floor(Math.random() * 3)) {
-          case 0:
-            return "jetpack";
-          case 1:
-            return "ammo";
-          case 2:
-            return "health";
-          case 3:
-            return "bricks";
-        }
-      })(),
+      type: ["jetpack", "ammo", "health", "bricks"][
+        Math.floor(Math.random() * 4)
+      ],
       id: faceKey(position.x, position.y, position.z, undefined),
     };
 

@@ -1,6 +1,6 @@
 #chat {
   position: fixed;
-  bottom: 110px;
+  bottom: 120px;
   left: 32px;
   width: 370px;
   overflow: hidden;
@@ -22,7 +22,7 @@
 
 #chat-input {
   position: fixed;
-  top: 32px;
+  top: calc(32px + 50px + 16px);
   left: 32px;
   width: 370px;
 

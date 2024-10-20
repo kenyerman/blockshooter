@@ -10,8 +10,8 @@ const pannerConfig = {
 
 // FIXME: creating new Howl instances every time a sound is played is wasting memory
 //        global Howler state holds references to them, so they can't be garbage collected
-//        instead, we should create a single audio file and sprites for all sounds, then
-//        instantiate them per player, and move them around as needed
+//        instead, we should create a single audio file with sprites for all sounds, then
+//        instantiate them per player, and move them around as the corresponding player moves
 const sounds = {
   shot: () =>
     new Howl({
@@ -49,11 +49,63 @@ const sounds = {
       src: ["/assets/damage.mp3"],
       preload: true,
     }),
+
+  ammo: () =>
+    new Howl({
+      src: ["/assets/ammo.mp3"],
+      preload: true,
+    }),
+
+  bricks: () =>
+    new Howl({
+      src: ["/assets/bricks.mp3"],
+      preload: true,
+    }),
+
+  jetpack: () =>
+    new Howl({
+      src: ["/assets/jetpack.mp3"],
+      preload: true,
+    }),
+
+  health: () =>
+    new Howl({
+      src: ["/assets/health.mp3"],
+      preload: true,
+    }),
+
+  bricks_use: () =>
+    new Howl({
+      src: ["/assets/bricks_use.mp3"],
+      preload: true,
+    }),
+
+  jetpack_use: () =>
+    new Howl({
+      src: ["/assets/jetpack_use.mp3"],
+      preload: true,
+    }),
+
+  wall_hit: () =>
+    new Howl({
+      src: ["/assets/wall_hit.mp3"],
+      preload: true,
+    }),
 };
 
 const play = (sound, id) => {
   sounds[sound]().play(id);
   broadcast(JSON.stringify({ sound, id, coords: pos }));
+};
+
+const play_world = (sound, id, coords) => {
+  const s = sounds[sound]();
+  s.pos(coords.x, coords.y, coords.z);
+  s.orientation(1, 1, 1);
+  s.pannerAttr(pannerConfig);
+  s.play(id);
+
+  broadcast(JSON.stringify({ sound, id, coords }));
 };
 
 registerCallback((peer, data) => {

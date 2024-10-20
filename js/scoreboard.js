@@ -120,6 +120,7 @@ const gainScore = (amount) => {
   });
 
   document.body.appendChild(scoreMsg);
+  refreshTable();
 
   broadcast(JSON.stringify({ score }));
 };
