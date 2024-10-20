@@ -50,6 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
     leftLeg.appendChild(createBox("left-leg-lower"));
     player.appendChild(leftLeg);
 
+    const gun = document.createElement("div");
+    gun.classList.add("gun");
+    gun.appendChild(createBox("gun-body"));
+    gun.appendChild(createBox("gun-mag"));
+    gun.appendChild(createBox("gun-handle"));
+    gun.appendChild(createBox("gun-aim"));
+    gun.appendChild(createBox("gun-aim2"));
+    player.appendChild(gun);
+
     player.style.transform = `translate3d(${x + 50}px, ${
       y + 50
     }px, ${z}px) rotateZ(${yaw - 90}deg)`;
@@ -57,6 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return player;
   };
+
+  createPartner("local", 100, 200, 0, 180);
 
   registerCallback((peer, data) => {
     const { x, y, z, yaw } = data;

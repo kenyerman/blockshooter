@@ -59,6 +59,16 @@
       background-color: greenyellow;
     }
   }
+
+  > .arm {
+    --a: 80px;
+    --b: 80px;
+    --c: 700px;
+    transform: translate3d(-500px, 50px, 570px) rotateX(10deg) rotateY(35deg);
+    > div {
+      background-color: blueviolet;
+    }
+  }
 }
 
 #viewmodel-animation {

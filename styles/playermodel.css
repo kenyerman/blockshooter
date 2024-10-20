@@ -23,8 +23,9 @@
   }
 
   > .left-arm {
-    transform-origin: 0 0 40px;
-    animation: swing 0.3s ease-in-out infinite alternate;
+    transform-origin: 0 -10px 40px;
+    transform: rotateY(-30deg) rotateZ(-5deg);
+    /* animation: swing 0.3s ease-in-out infinite alternate; */
 
     > .left-arm-upper {
       position: absolute;
@@ -53,13 +54,14 @@
           calc(var(--b) / -2 - 12px),
           16px
         )
-        rotateY(75deg);
+        rotateY(125deg);
     }
   }
 
   > .right-arm {
-    transform-origin: 0 0 40px;
-    animation: swing 0.3s ease-in-out infinite alternate-reverse;
+    transform-origin: -2px 10px 40px;
+    /* animation: swing 0.3s ease-in-out infinite alternate-reverse; */
+    transform: rotateY(60deg) rotateX(-12deg) rotateZ(90deg);
 
     > .right-arm-upper {
       position: absolute;
@@ -78,7 +80,7 @@
     > .right-arm-lower {
       position: absolute;
 
-      --a: 12px;
+      --a: 16px;
       --b: 5px;
       --c: 5px;
 
@@ -88,7 +90,7 @@
           calc(var(--b) / -2 + 12px),
           16px
         )
-        rotateY(75deg);
+        rotateY(60deg);
     }
   }
 
@@ -159,6 +161,76 @@
           0px
         )
         rotateY(-55deg);
+    }
+  }
+
+  > .gun {
+    transform: translate3d(-23px, -7px, 36px) rotateY(3deg) rotateZ(-15deg);
+
+    > .gun-body {
+      position: absolute;
+
+      div {
+        background-color: yellow;
+      }
+
+      --a: 6px;
+      --b: 6px;
+      --c: 22px;
+    }
+
+    > .gun-mag {
+      position: absolute;
+
+      div {
+        background-color: greenyellow;
+      }
+
+      --a: 4px;
+      --b: 4px;
+      --c: 4px;
+
+      transform: translate3d(4px, 1px, -4px);
+    }
+
+    > .gun-handle {
+      position: absolute;
+
+      div {
+        background-color: greenyellow;
+      }
+
+      --a: 8px;
+      --b: 4px;
+      --c: 5px;
+
+      transform: translate3d(17px, 1px, -6px) rotateY(-10deg);
+    }
+
+    > .gun-aim {
+      position: absolute;
+
+      div {
+        background-color: greenyellow;
+      }
+
+      --a: 2px;
+      --b: 2px;
+      --c: 2px;
+      transform: translate3d(2px, 2px, 6px);
+    }
+
+    > .gun-aim2 {
+      position: absolute;
+
+      div {
+        background-color: greenyellow;
+      }
+
+      --a: 2px;
+      --b: 2px;
+      --c: 4px;
+      transform: translate3d(12px, 2px, 6px);
     }
   }
 }
