@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 let FACES = {};
 const faceKey = (x, y, z, face) => `${x}_${y}_${z}_${face}`;
 const faceKeyFrom = (key) => {
-  const [x, y, z, face] = key.split("_");
+  const [x, y, z, face] = key?.split("_") || [];
   return { x, y, z, face };
 };
 
@@ -67,32 +67,25 @@ const addPlane = (z) => {
   }
 };
 
-const addPlayer = (x, y, z, yaw) => {
-  setFace(x, y, z, "z", "red");
-  setFace(x, y, z, "x", "red");
-  setFace(x, y, z, "y", "red");
-};
+document.addEventListener("DOMContentLoaded", async () => {
+  const { faces: mapFaces, spawnpoints } = await import("/js/map.json", {
+    with: { type: "json" },
+  }).then((module) => module.default);
 
-document.addEventListener("DOMContentLoaded", () => {
-  addPlane(0);
+  FACES = mapFaces;
+  SPAWN_POINTS = spawnpoints.map((point) => {
+    const { p, y } = point;
+    const coords = faceKeyFrom(p);
 
-  addCube(0, 0, 0, "orange");
-  addCube(MAP_SIZE - 1, 0, 0, "lightblue");
-  addCube(0, MAP_SIZE - 1, 0, "lightgreen");
-  addCube(MAP_SIZE - 1, MAP_SIZE - 1, 0, "lightcoral");
-
-  addCube(12, 12, 0, "lightcoral");
-  addCube(12, 13, 1, "lightcoral");
-
-  addCube(12, 14, 2, "lightcoral");
-  setFace(13, 14, 3, "z", "lightcoral");
-  setFace(14, 14, 3, "z", "lightcoral");
-  setFace(12, 15, 3, "z", "lightcoral");
-  setFace(13, 15, 3, "z", "lightcoral");
-  setFace(14, 15, 3, "z", "lightcoral");
-  setFace(12, 16, 3, "z", "lightcoral");
-  setFace(13, 16, 3, "z", "lightcoral");
-  setFace(14, 16, 3, "z", "lightcoral");
+    return {
+      p: {
+        x: parseInt(coords.x) * FACE_SIZE,
+        y: parseInt(coords.y) * FACE_SIZE,
+        z: parseInt(coords.z) * FACE_SIZE,
+      },
+      y,
+    };
+  });
 
   Object.keys(FACES).forEach((key) => {
     drawFace(key);

@@ -2,16 +2,16 @@
 
 let playerName = "player";
 
-let pos = { x: 100, y: 100, z: 0 };
-let look = { p: 0, y: 0, r: 0 };
+let SPAWN_POINTS = [
+  { x: 100, y: 100, z: 300 },
+  { x: 1200, y: 1000, z: 300 },
+  { x: 2300, y: 300, z: 300 },
+];
+
+let pos = SPAWN_POINTS[Math.floor(Math.random() * SPAWN_POINTS.length)];
+let look = { p: 0, y: 270, r: 0 };
 let velocity = { x: 0, y: 0, z: 0 };
 let velocitySelf = { x: 0, y: 0, z: 0 };
-
-const SPAWN_POINTS = [
-  { x: 100, y: 100, z: 0 },
-  { x: 1200, y: 1000, z: 0 },
-  { x: 2300, y: 300, z: 0 },
-];
 
 const PERSPECTIVE = 1000;
 const SPEED = 5;
@@ -87,6 +87,18 @@ const getHowlerVectors = () => {
   return { forward, up };
 };
 
+const spawn = () => {
+  const { p: point, y: yaw } =
+    SPAWN_POINTS[Math.floor(Math.random() * SPAWN_POINTS.length)];
+
+  health = 100;
+  armor = 100;
+  pos = point;
+  look = { p: 0, y: yaw, r: 0 };
+
+  broadcast(serializeState());
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   const dialog = document.querySelector("dialog");
   dialog.showModal();
@@ -98,6 +110,8 @@ document.addEventListener("DOMContentLoaded", () => {
     setSelfName(playerName);
     broadcast(JSON.stringify({ name: playerName }));
     localStorage.setItem("@css3d/playerName", playerName);
+
+    spawn();
 
     dialog.close();
     dialog.remove();
@@ -337,8 +351,28 @@ document.addEventListener("DOMContentLoaded", () => {
       v.y *= 0.7071067811865475;
     }
 
-    v.x *= SPEED * (ducking || aimDownSights ? 0.5 : 1);
-    v.y *= SPEED * (ducking || aimDownSights ? 0.5 : 1);
+    const getSpeed = () => {
+      if (jumping) {
+        return SPEED;
+      }
+
+      if (ducking && aimDownSights) {
+        return SPEED * 0.1;
+      }
+
+      if (ducking) {
+        return SPEED * 0.2;
+      }
+
+      if (aimDownSights) {
+        return SPEED * 0.5;
+      }
+
+      return SPEED;
+    };
+
+    v.x *= getSpeed();
+    v.y *= getSpeed();
     v.z *= SPEED * 2;
 
     velocitySelf = { ...v };
@@ -690,12 +724,7 @@ document.addEventListener("DOMContentLoaded", () => {
       play("hurt");
 
       if (health <= 0) {
-        health = 100;
-        armor = 100;
-
-        pos =
-          SPAWN_POINTS[Math.round(Math.random() * (SPAWN_POINTS.length - 1))];
-        broadcast(serializeState());
+        spawn();
 
         getKilledByPeer(peer);
       }

@@ -1,6 +1,6 @@
 "use strict";
 
-const POWERUP_INTERVAL = 5_000;
+const POWERUP_INTERVAL = 1_000;
 const POWERUP_LIFE = 10_000;
 const POWERUP_SIZE = 10;
 let lastPowerupGenerationTime = undefined;
