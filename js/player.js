@@ -323,9 +323,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   let lastframe = Date.now();
+  let lastframeBullet = Date.now();
   let lastframeStep = Date.now();
   let lastframeJetpack = Date.now();
   const loop = () => {
+    const now = Date.now();
+    const delta = now - lastframe;
+    const fps = 1000 / delta;
+    lastframe = now;
+
+    document.querySelector("#fps").textContent = Math.round(fps);
+
     const stateBefore = serializeState();
 
     const angle = (look.y * Math.PI) / 180;
@@ -446,8 +454,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     look.r *= 0.9;
 
-    if (BULLET_RATE <= Date.now() - lastframe) {
-      lastframe = Date.now();
+    if (BULLET_RATE <= Date.now() - lastframeBullet) {
+      lastframeBullet = Date.now();
 
       if (shooting && ammo) {
         lastshotSeed = Math.random();
