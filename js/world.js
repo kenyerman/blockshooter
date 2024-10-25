@@ -68,7 +68,7 @@ const addPlane = (z) => {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const { faces: mapFaces, spawnpoints } = await import("/js/map.json", {
+  const { faces: mapFaces, spawnpoints } = await import("./map.json", {
     with: { type: "json" },
   }).then((module) => module.default);
 
